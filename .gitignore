@@ -2,4 +2,5 @@ bin/
 *.swp
 /build.hxml
 .DS_Store
+tags
 assets/font/*.hash
