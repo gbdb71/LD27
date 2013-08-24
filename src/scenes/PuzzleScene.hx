@@ -1,6 +1,7 @@
 package scenes;
  
 import com.haxepunk.Scene;
+import entities.Disposer;
 import utils.TriggerMonitor;
 import flash.display.Loader;
 import com.haxepunk.utils.Input;
@@ -12,10 +13,11 @@ import com.haxepunk.graphics.prototype.Rect;
 import com.haxepunk.utils.Ease;
 import entities.Robot;
 import entities.Bomb;
-import entities.Level;
 import entities.Timer;
 import entities.Breakable;
-import utils.LevelLoader;
+import level.LevelLoader;
+import level.Level;
+import level.Blockable;
  
 class PuzzleScene extends Scene
 {
@@ -27,8 +29,25 @@ class PuzzleScene extends Scene
     private static inline var DisposalLayer:Int = 1;
     private static inline var LevelLayer:Int = 2;
 
-    var gridX = 8;
-    var gridY = 8;
+    public static inline var gridWidth = 8;
+    public static inline var gridHeight = 8;
+    public static inline function toColumn(value:Float):Int
+    {
+        return Math.floor(value / gridWidth);
+    }
+    public static inline function toRow(value:Float):Int
+    {
+        return Math.floor(value / gridHeight);
+    }
+    public static inline function toX(value:Int):Float
+    {
+        return value * gridWidth;
+    }
+    public static inline function toY(value:Int):Float
+    {
+        return value * gridHeight;
+    }
+
     var playAreaWidth = 160;
     var playAreaHeight = 120;
     var levelTimer = 10;
@@ -43,11 +62,11 @@ class PuzzleScene extends Scene
     {
         var levelLoader = new LevelLoader();
         levelLoader.parse("levels/level1.tmx");
-        robot = new Robot(levelLoader.robot.x * gridX, levelLoader.robot.y * gridY);
+        robot = new Robot(levelLoader.robot.x * gridWidth, levelLoader.robot.y * gridHeight);
         add(robot);
         robot.layer = EntityLayer;
 
-        var map = new Tilemap("gfx/leveltiles.png", playAreaWidth, playAreaHeight, gridX, gridY);
+        var map = new Tilemap("gfx/leveltiles.png", playAreaWidth, playAreaHeight, gridWidth, gridHeight);
         map.loadFromString(levelLoader.layout);
         var grid = new Grid(map.width, map.height, map.tileWidth, map.tileHeight);
         grid.loadFromString(levelLoader.layout);
@@ -57,30 +76,27 @@ class PuzzleScene extends Scene
 
         var bombX = Math.floor(levelLoader.bomb.x);
         var bombY = Math.floor(levelLoader.bomb.y);
-        bomb = new Bomb(bombX * gridX, bombY * gridY);
+        bomb = new Bomb(bombX * gridWidth, bombY * gridHeight);
         add(bomb);
         bomb.layer = EntityLayer;
-        level.markObstacle(bombX, bombY, true, BombID);
-        bombTriggerMonitor = new TriggerMonitor(bomb, level, gridX, gridY);
+        level.addObstacle(bomb);
+        bombTriggerMonitor = new TriggerMonitor(bomb, level, gridWidth, gridHeight);
         bombTriggerMonitor.onTrigger = checkBombTrigger;
 
         var disposeX = Math.floor(levelLoader.dispose.x);
         var disposeY = Math.floor(levelLoader.dispose.y);
-        level.markObstacle(disposeX, disposeY, false, DisposalID);
-        var disposeIndicator = addGraphic(new Rect(8, 8, 0x00FF00));
-        disposeIndicator.x = disposeX * gridX;
-        disposeIndicator.y = disposeY * gridY;
-        disposeIndicator.layer = DisposalLayer;
+        var dispose = new Disposer(disposeX * gridWidth, disposeY * gridHeight);
+        dispose.layer = DisposalLayer;
+        level.addSensor(dispose);
+        add(dispose);
 
-        breakables = new Array<Breakable>();
         for (breakPos in levelLoader.breakaway)
         {
             var breakX = Math.floor(breakPos.x);
             var breakY = Math.floor(breakPos.y);
-            var breakable = new Breakable(breakX * gridX, breakY * gridY);
-            level.markObstacle(breakX, breakY, true, BreakableID);
+            var breakable = new Breakable(breakX * gridWidth, breakY * gridHeight);
+            level.addObstacle(breakable);
             add(breakable);
-            breakables.push(breakable);
         }
 
         timer = new Timer(playAreaWidth, 1, 10);
@@ -118,48 +134,48 @@ class PuzzleScene extends Scene
     }
 
     private function onRobotMoveFinished(dirX:Int, dirY:Int) {
-        var robotColliderX = Math.floor(robot.x / gridX) + dirX;
-        var robotColliderY = Math.floor(robot.y / gridY) + dirY;
+        var robotColliderX = robot.column + dirX;
+        var robotColliderY = robot.row + dirY;
 
         var obstacles = level.getObstacles(robotColliderX, robotColliderY);
-        for (id in obstacles)
+        for (blockable in obstacles)
         {
-            if (id == BombID)
+            if (blockable == bomb)
             {
-                moveBomb(dirX, dirY);
+                moveBomb(bomb, dirX, dirY);
             }
-            else if (id == BreakableID)
+            else if (Std.is(blockable, Breakable))
             {
+                var breakable = cast(blockable, Breakable);
+                breakable.collapse();
             }
         }
     }
 
     private function moveRobot(dirX:Int, dirY:Int) {
-        var startX = Math.floor(robot.x / gridX);
-        var startY = Math.floor(robot.y / gridY);
-        var target = determineSlide(startX, startY, dirX, dirY);
+        var startX = robot.column;
+        var startY = robot.row;
+        var target = level.sweep(startX, startY, dirX, dirY);
 
         if (target.x == startX && target.y == startY)
         {
             return;
         }
-        robot.move(target.x * gridX, target.y * gridY);
+        robot.move(target.x, target.y);
         robot.onMoveFinished = function() {
             onRobotMoveFinished(dirX, dirY);
         }
     }
 
-    private function moveBomb(dirX:Int, dirY:Int) {
-        var startX = Math.floor(bomb.x / gridX);
-        var startY = Math.floor(bomb.y / gridY);
-        var target = determineSlide(startX, startY, dirX, dirY);
+    private function moveBomb(bomb:Bomb, dirX:Int, dirY:Int) {
+        var startX = bomb.column;
+        var startY = bomb.row;
+        var target = level.sweep(startX, startY, dirX, dirY);
         if (target.x == startX && target.y == startY)
         {
             return;
         }
-        level.removeObstacle(BombID);
-        level.markObstacle(target.x, target.y, true, BombID);
-        bomb.move(target.x * gridX, target.y * gridY);
+        bomb.move(target.x, target.y);
         bombTriggerMonitor.setCompensation(dirX, dirY);
         bomb.onMoveFinished = function()
         {
@@ -167,34 +183,19 @@ class PuzzleScene extends Scene
         }
     }
 
-    private function determineSlide(startX:Int, startY:Int, dirX:Int, dirY:Int):Dynamic
+    function checkBombTrigger(blockables:Array<Blockable>)
     {
-        var currentX = startX;
-        var currentY = startY;
-        do
-        {
-            currentX += dirX;
-            currentY += dirY;
-        }
-        while (!level.isSolid(currentX, currentY));
-
-        currentX -= dirX;
-        currentY -= dirY;
-
-        return { x : currentX, y : currentY };
-    }
-
-    function checkBombTrigger(triggerIDs:Array<Int>)
-    {
+        /*
         for (id in triggerIDs)
         {
             if(id == DisposalID)
             {
                 bomb.dispose();
-                level.removeObstacle(BombID);
+                level.removeObstacle(bomb);
                 break;
             }
         }
+        */
     }
 
     public override function update()
@@ -220,5 +221,4 @@ class PuzzleScene extends Scene
     var resetPrime:Bool;
     var timer:Timer;
     var bombTriggerMonitor:TriggerMonitor;
-    var breakables:Array<Breakable>;
 }

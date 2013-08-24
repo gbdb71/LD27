@@ -1,10 +1,11 @@
 package utils;
 
 import com.haxepunk.Entity;
-import entities.Level;
+import level.Level;
+import level.Blockable;
 
 class TriggerMonitor {
-    public var onTrigger:Array<Int>->Void;
+    public var onTrigger:Array<Blockable>->Void;
 
     var entity:Entity;
     var level:Level;
