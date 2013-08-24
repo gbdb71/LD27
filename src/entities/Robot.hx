@@ -1,75 +1,50 @@
 package entities;
  
 import com.haxepunk.Entity;
-import com.haxepunk.utils.Input;
+import com.haxepunk.Tween;
+import com.haxepunk.utils.Ease;
+import com.haxepunk.tweens.motion.LinearMotion;
 import com.haxepunk.graphics.prototype.Circle;
-import flash.geom.Point;
  
 class Robot extends Entity
 {
-    private static inline var speed:Float = 1;
+    private static inline var speed:Float = 50;
 
-    var moving:Bool;
-    var moveDir:Point;
+    var moveTween:LinearMotion;
+    public var isMoving(default, null):Bool;
 
     public function new(x:Float, y:Float)
     {
         super(x, y);
         graphic = new Circle(4, 0xAAAAAA);
         setHitbox(8, 8);
+        moveTween = new LinearMotion(moveComplete);
+        addTween(moveTween);
         type="robot";
     }
 
-    private function handleInput() {
-        var moveX = 0;
-        var moveY = 0;
-        if (Input.check("left"))
+    private function moveComplete(tween:Dynamic) {
+        isMoving = false;
+        x = moveTween.x;
+        y = moveTween.y;
+    }
+
+    public function move(toX:Float, toY:Float)
+    {
+        if (!isMoving)
         {
-            moveX -= 1;
-        }    
-        if (Input.check("right"))
-        {
-            moveX += 1;
-        }    
-        if (Input.check("up"))
-        {
-            moveY -= 1;
-        }    
-        if (Input.check("down"))
-        {
-            moveY += 1;
+            moveTween.setMotionSpeed(x, y, toX, toY, speed, Ease.quadIn);
+            isMoving = true;
         }
-
-        var validMove = !(moveX != 0 && moveY != 0) && moveX + moveY != 0;
-        if (!validMove)
-            return;
-
-        moving = true;
-        moveDir = new Point(moveX, moveY);
-    }
-
-    public override function moveCollideX(e:Entity):Bool
-    {
-        moving = false;
-        return true;
-    }
-
-    public override function moveCollideY(e:Entity):Bool
-    {
-        moving = false;
-        return true;
     }
 
     public override function update()
     {
         super.update();
-        if (!moving)
+        if (isMoving)
         {
-            handleInput();
-        }
-        else
-        {
-            moveBy(moveDir.x * speed, moveDir.y * speed, "level");
+            x = moveTween.x;
+            y = moveTween.y;
         }
     }
 }

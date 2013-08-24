@@ -1,6 +1,7 @@
 package scenes;
  
 import com.haxepunk.Scene;
+import com.haxepunk.utils.Input;
 import com.haxepunk.masks.Grid;
 import com.haxepunk.graphics.Tilemap;
 import com.haxepunk.HXP;
@@ -19,10 +20,10 @@ class PuzzleScene extends Scene
 
     public override function begin()
     {
-        var robot = new Robot(5 * gridX, 7 * gridY);
+        robot = new Robot(5 * gridX, 7 * gridY);
         add(robot);
 
-        var map = new Tilemap("gfx/leveltiles.png", HXP.screen.width, HXP.screen.height, gridX, gridY);
+        var map = new Tilemap("gfx/leveltiles.png", Math.floor(HXP.screen.width / HXP.screen.scale), Math.floor(HXP.screen.height / HXP.screen.scale), gridX, gridY);
         map.setTile(10, 7, 0);
         map.setTile(9, 2, 0);
         map.setTile(2, 3, 0);
@@ -32,8 +33,64 @@ class PuzzleScene extends Scene
         grid.setTile(9, 2, true);
         grid.setTile(2, 3, true);
         grid.setTile(3, 8, true);
-        var level = new Level(map, grid);
+        level = new Level(map, grid);
         add(level);
     }
 
+    private function handleInput() {
+        var moveX = 0;
+        var moveY = 0;
+        if (Input.check("left"))
+        {
+            moveX -= 1;
+        }    
+        if (Input.check("right"))
+        {
+            moveX += 1;
+        }    
+        if (Input.check("up"))
+        {
+            moveY -= 1;
+        }    
+        if (Input.check("down"))
+        {
+            moveY += 1;
+        }
+
+        var validMove = !(moveX != 0 && moveY != 0) && moveX + moveY != 0;
+        if (!validMove || robot.isMoving)
+            return;
+
+        moveRobot(moveX, moveY);
+    }
+
+    private function moveRobot(dirX:Int, dirY:Int) {
+        var startRobotTileX = Math.floor(robot.x / gridX);
+        var startRobotTileY = Math.floor(robot.y / gridY);
+        var robotTileX:Int = startRobotTileX;
+        var robotTileY:Int = startRobotTileY;
+        while (!level.isSolid(robotTileX, robotTileY))
+        {
+            robotTileX += dirX;
+            robotTileY += dirY;
+        }
+        robotTileX -= dirX;
+        robotTileY -= dirY;
+
+        if (robotTileX == startRobotTileX && robotTileY == startRobotTileY)
+        {
+            return;
+        }
+        robot.move(robotTileX * gridX, robotTileY * gridY);
+    }
+
+
+    public override function update()
+    {
+        super.update();
+        handleInput();
+    }
+
+    var robot:Robot;
+    var level:Level;
 }

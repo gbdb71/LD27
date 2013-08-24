@@ -17,6 +17,14 @@ class Level extends Entity
         type = "level";
     }
 
+    public function isSolid(column:Int, row:Int):Bool {
+        if (column < 0 || column > grid.columns - 1)
+            return true;
+        if (row < 0 || row > grid.rows - 1)
+            return true;
+        return grid.getTile(column, row);
+    }
+
     var map:Tilemap;
     var grid:Grid;
 }
