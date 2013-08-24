@@ -159,6 +159,7 @@ class PuzzleScene extends Scene
                 bomb.x = tileX * gridX;
                 bomb.y = tileY * gridY;
                 bomb.dispose();
+                level.removeObstacle(BombID);
             }
         }
 
