@@ -1,11 +1,10 @@
 package entities;
  
 import com.haxepunk.Entity;
-import com.haxepunk.graphics.prototype.Circle;
-import com.haxepunk.utils.Ease;
+import com.haxepunk.graphics.prototype.Rect;
 import utils.SlideBehaviour;
  
-class Robot extends Entity
+class Bomb extends Entity
 {
     public var isMoving(get,never):Bool;
     public var onMoveFinished(never,set):Void->Void;
@@ -25,14 +24,14 @@ class Robot extends Entity
     public function new(x:Float, y:Float)
     {
         super(x, y);
-        graphic =  new Circle(4, 0xAAAAAA);
-        type="robot";
+        graphic = new Rect(8, 8, 0xFF2222);
+        type="bomb";
         slideBehaviour = new SlideBehaviour(this);
     }
 
     public function move(toX:Float, toY:Float)
     {
-        slideBehaviour.move(toX, toY, Ease.quadIn);
+        slideBehaviour.move(toX, toY, null);
     }
 
     public override function update()

@@ -9,6 +9,7 @@ import com.haxepunk.graphics.prototype.Circle;
 import com.haxepunk.graphics.prototype.Rect;
 import com.haxepunk.utils.Ease;
 import entities.Robot;
+import entities.Bomb;
 import entities.Level;
  
 class PuzzleScene extends Scene
@@ -25,7 +26,7 @@ class PuzzleScene extends Scene
 
     public override function begin()
     {
-        robot = new Robot(5 * gridX, 7 * gridY, new Circle(4, 0xAAAAAA));
+        robot = new Robot(5 * gridX, 7 * gridY);
         add(robot);
 
         var map = new Tilemap("gfx/leveltiles.png", Math.floor(HXP.screen.width / HXP.screen.scale), Math.floor(HXP.screen.height / HXP.screen.scale), gridX, gridY);
@@ -41,7 +42,7 @@ class PuzzleScene extends Scene
         level = new Level(map, grid);
         add(level);
 
-        bomb = new Robot(5 * gridX, 9 * gridY, new Rect(8, 8, 0xFF2222));
+        bomb = new Bomb(5 * gridX, 9 * gridY);
         add(bomb);
 
         level.markObstacle(5, 9, true, BombID);
@@ -94,7 +95,7 @@ class PuzzleScene extends Scene
         {
             return;
         }
-        robot.move(target.x * gridX, target.y * gridY, Ease.quadIn);
+        robot.move(target.x * gridX, target.y * gridY);
         robot.onMoveFinished = function() {
             onRobotMoveFinished(dirX, dirY);
         }
@@ -110,7 +111,7 @@ class PuzzleScene extends Scene
         }
         level.removeObstacle(BombID);
         level.markObstacle(target.x, target.y, true, BombID);
-        bomb.move(target.x * gridX, target.y * gridY, null);
+        bomb.move(target.x * gridX, target.y * gridY);
     }
 
     private function determineSlide(startX:Int, startY:Int, dirX:Int, dirY:Int):Dynamic
@@ -138,5 +139,5 @@ class PuzzleScene extends Scene
 
     var robot:Robot;
     var level:Level;
-    var bomb:Robot;
+    var bomb:Bomb;
 }
