@@ -23,8 +23,9 @@
 </data>
  </layer>
  <objectgroup name="Object Layer 1" width="20" height="15">
-  <object name="dispose" x="44" y="52"/>
-  <object name="robot" x="51" y="44"/>
-  <object name="bomb" x="52" y="52"/>
+  <object type="dispose" x="44" y="52"/>
+  <object type="robot" x="51" y="44"/>
+  <object type="bomb" x="52" y="52"/>
+  <object type="breakable" x="84" y="44"/>
  </objectgroup>
 </map>

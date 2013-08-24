@@ -4,7 +4,7 @@ import com.haxepunk.Entity;
 import entities.Level;
 
 class TriggerMonitor {
-    public var onTrigger:Int->Void;
+    public var onTrigger:Array<Int>->Void;
 
     var entity:Entity;
     var level:Level;
@@ -45,10 +45,10 @@ class TriggerMonitor {
             return;
         }
 
-        var obstacle = level.getObstacle(gridX, gridY);
-        if (obstacle != Level.NoObstacleID)
+        var obstacles = level.getObstacles(gridX, gridY);
+        if (obstacles.length > 0)
         {
-            onTrigger(obstacle);
+            onTrigger(obstacles);
         }
     }
 }

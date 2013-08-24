@@ -14,12 +14,14 @@ import entities.Robot;
 import entities.Bomb;
 import entities.Level;
 import entities.Timer;
+import entities.Breakable;
 import utils.LevelLoader;
  
 class PuzzleScene extends Scene
 {
     private static inline var BombID:Int = 0;
     private static inline var DisposalID:Int = 1;
+    private static inline var BreakableID:Int = 2;
 
     private static inline var EntityLayer:Int = 0;
     private static inline var DisposalLayer:Int = 1;
@@ -70,6 +72,17 @@ class PuzzleScene extends Scene
         disposeIndicator.y = disposeY * gridY;
         disposeIndicator.layer = DisposalLayer;
 
+        breakables = new Array<Breakable>();
+        for (breakPos in levelLoader.breakaway)
+        {
+            var breakX = Math.floor(breakPos.x);
+            var breakY = Math.floor(breakPos.y);
+            var breakable = new Breakable(breakX * gridX, breakY * gridY);
+            level.markObstacle(breakX, breakY, true, BreakableID);
+            add(breakable);
+            breakables.push(breakable);
+        }
+
         timer = new Timer(playAreaWidth, 1, 10);
         add(timer);
     }
@@ -108,10 +121,16 @@ class PuzzleScene extends Scene
         var robotColliderX = Math.floor(robot.x / gridX) + dirX;
         var robotColliderY = Math.floor(robot.y / gridY) + dirY;
 
-        var obstacleID = level.getObstacle(robotColliderX, robotColliderY);
-        if (obstacleID == BombID)
+        var obstacles = level.getObstacles(robotColliderX, robotColliderY);
+        for (id in obstacles)
         {
-            moveBomb(dirX, dirY);
+            if (id == BombID)
+            {
+                moveBomb(dirX, dirY);
+            }
+            else if (id == BreakableID)
+            {
+            }
         }
     }
 
@@ -165,12 +184,16 @@ class PuzzleScene extends Scene
         return { x : currentX, y : currentY };
     }
 
-    function checkBombTrigger(triggerID)
+    function checkBombTrigger(triggerIDs:Array<Int>)
     {
-        if(triggerID == DisposalID)
+        for (id in triggerIDs)
         {
-            bomb.dispose();
-            level.removeObstacle(BombID);
+            if(id == DisposalID)
+            {
+                bomb.dispose();
+                level.removeObstacle(BombID);
+                break;
+            }
         }
     }
 
@@ -197,4 +220,5 @@ class PuzzleScene extends Scene
     var resetPrime:Bool;
     var timer:Timer;
     var bombTriggerMonitor:TriggerMonitor;
+    var breakables:Array<Breakable>;
 }

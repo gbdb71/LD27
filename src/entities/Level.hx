@@ -11,12 +11,14 @@ private class Obstacle
     public var row(default, null):Int;
     public var solid(default, null):Bool;
     public var id(default, null):Int;
+    public var data(default, null):Dynamic;
 
-    public function new(column:Int, row:Int, solid:Bool, id:Int) {
+    public function new(column:Int, row:Int, solid:Bool, id:Int, ?data:Dynamic) {
         this.column = column;
         this.row = row;
         this.solid = solid;
         this.id = id;
+        this.data = data;
     }
 }
 
@@ -55,14 +57,15 @@ class Level extends Entity
         obstacles.push(obstacle);
     }
 
-    public function getObstacle(column:Int, row:Int):Int {
+    public function getObstacles(column:Int, row:Int):Array<Int> {
+        var colliders = new Array<Int>();
         for( obstacle in obstacles ){
            if (obstacle.column == column && obstacle.row == row)
            {
-               return obstacle.id;
+               colliders.push(obstacle.id);
            }
         }
-        return NoObstacleID;
+        return colliders;
     }
 
     public function removeObstacle(id:Int)

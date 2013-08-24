@@ -9,9 +9,11 @@ class LevelLoader {
     public var bomb(default, null):Point;
     public var robot(default, null):Point;
     public var dispose(default, null):Point;
+    public var breakaway(default, null):Array<Point>;
     public var layout(default, null):String;
     
     public function new() {
+        breakaway = new Array<Point>();
     }
 
     public function parse(filename:String)
@@ -29,12 +31,17 @@ class LevelLoader {
         {
             var x = Math.floor(Std.parseInt(obj.att.x) / tileWidth);
             var y = Math.floor(Std.parseInt(obj.att.y) / tileHeight);
-            if (obj.att.name == "bomb")
+            if (obj.att.type == "bomb")
                 bomb = new Point(x, y);
-            if (obj.att.name == "robot")
+            else if (obj.att.type == "robot")
                 robot = new Point(x, y);
-            if (obj.att.name == "dispose")
+            else if (obj.att.type == "dispose")
                 dispose = new Point(x, y);
+            else if (obj.att.type == "breakable")
+            {
+                var breakable = new Point(x, y);
+                breakaway.push(breakable);
+            }
         }
     }
 }
