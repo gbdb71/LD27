@@ -4,3 +4,4 @@ bin/
 .DS_Store
 tags
 assets/font/*.hash
+/project.xml.hxml
