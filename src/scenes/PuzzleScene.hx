@@ -169,7 +169,12 @@ class PuzzleScene extends Scene
         {
             return;
         }
-        timer.sub(moveTime);
+        
+        if (!timer.sub(moveTime))
+        {
+            return;
+        }
+
         robot.move(target.x, target.y);
         robot.onMoveFinished = function() {
             onRobotMoveFinished(dirX, dirY);
