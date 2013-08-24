@@ -129,6 +129,10 @@ class PuzzleScene extends Scene
         level.removeObstacle(BombID);
         level.markObstacle(target.x, target.y, true, BombID);
         bomb.move(target.x * gridX, target.y * gridY);
+        bomb.onMoveFinished = function()
+        {
+            checkBombDispose();
+        }
     }
 
     private function determineSlide(startX:Int, startY:Int, dirX:Int, dirY:Int):Dynamic
@@ -148,21 +152,35 @@ class PuzzleScene extends Scene
         return { x : currentX, y : currentY };
     }
 
+    function checkBombDispose()
+    {
+        var tileX = Math.floor(bomb.x / gridX);
+        var tileY = Math.floor(bomb.y / gridY);
+
+        if (bomb.isMoving)
+        {
+            if (bomb.directionX < 0)
+                tileX += 1;
+            if (bomb.directionY < 0)
+                tileY += 1;
+        }
+
+        if(level.getObstacle(tileX, tileY) == DisposalID)
+        {
+            bomb.x = tileX * gridX;
+            bomb.y = tileY * gridY;
+            bomb.dispose();
+            level.removeObstacle(BombID);
+        }
+    }
+
     public override function update()
     {
         super.update();
         handleInput();
         if (bomb.isMoving)
         {
-            var tileX = Math.floor(bomb.x / gridX);
-            var tileY = Math.floor(bomb.y / gridY);
-            if(level.getObstacle(tileX, tileY) == DisposalID)
-            {
-                bomb.x = tileX * gridX;
-                bomb.y = tileY * gridY;
-                bomb.dispose();
-                level.removeObstacle(BombID);
-            }
+            checkBombDispose();
         }
 
         if (Input.check("reset"))

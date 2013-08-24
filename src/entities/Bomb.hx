@@ -1,5 +1,6 @@
 package entities;
  
+import com.haxepunk.HXP;
 import com.haxepunk.Entity;
 import com.haxepunk.graphics.prototype.Rect;
 import utils.SlideBehaviour;
@@ -8,6 +9,8 @@ class Bomb extends Entity
 {
     public var isMoving(get,never):Bool;
     public var onMoveFinished(never,set):Void->Void;
+    public var directionX(default, null):Int;
+    public var directionY(default, null):Int;
 
     function set_onMoveFinished(value):Void->Void
     {
@@ -31,6 +34,8 @@ class Bomb extends Entity
 
     public function move(toX:Float, toY:Float)
     {
+        directionX = HXP.sign(toX - x);
+        directionY = HXP.sign(toY - y);
         slideBehaviour.move(toX, toY, null);
     }
 
