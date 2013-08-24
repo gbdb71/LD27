@@ -23,6 +23,8 @@ class PuzzleScene extends Scene
 
     var gridX = 8;
     var gridY = 8;
+    var playAreaWidth = 160;
+    var playAreaHeight = 120;
 
     public function new()
     {
@@ -35,7 +37,7 @@ class PuzzleScene extends Scene
         add(robot);
         robot.layer = EntityLayer;
 
-        var map = new Tilemap("gfx/leveltiles.png", Math.floor(HXP.screen.width / HXP.screen.scale), Math.floor(HXP.screen.height / HXP.screen.scale), gridX, gridY);
+        var map = new Tilemap("gfx/leveltiles.png", playAreaWidth, playAreaHeight, gridX, gridY);
         map.setTile(10, 7, 0);
         map.setTile(9, 2, 0);
         map.setTile(2, 3, 0);
@@ -159,9 +161,20 @@ class PuzzleScene extends Scene
                 bomb.dispose();
             }
         }
+
+        if (Input.check("reset"))
+        {
+            resetPrime = true;
+        }
+        else if (resetPrime)
+        {
+            resetPrime = false;
+            HXP.scene = new PuzzleScene();
+        }
     }
 
     var robot:Robot;
     var level:Level;
     var bomb:Bomb;
+    var resetPrime:Bool;
 }

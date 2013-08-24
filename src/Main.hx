@@ -13,6 +13,7 @@ class Main extends Engine
         Input.define("right", [Key.D, Key.RIGHT]);
         Input.define("up", [Key.W, Key.UP]);
         Input.define("down", [Key.S, Key.DOWN]);
+        Input.define("reset", [Key.R]);
 
 #if debug
 		HXP.console.enable();
