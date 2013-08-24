@@ -13,6 +13,7 @@
 
 	<haxelib name="openfl" />
 	<haxelib name="HaxePunk" />
+	<haxelib name="polygonal-printf" />
 
 	<assets path="assets/graphics" rename="gfx" include="*.png|*.jpg" />
 	<assets path="assets/audio" rename="sfx" include="*.mp3" if="flash" />

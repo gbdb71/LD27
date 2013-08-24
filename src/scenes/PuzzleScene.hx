@@ -12,6 +12,7 @@ import com.haxepunk.utils.Ease;
 import entities.Robot;
 import entities.Bomb;
 import entities.Level;
+import entities.Timer;
 import utils.LevelLoader;
  
 class PuzzleScene extends Scene
@@ -27,6 +28,8 @@ class PuzzleScene extends Scene
     var gridY = 8;
     var playAreaWidth = 160;
     var playAreaHeight = 120;
+    var levelTimer = 10;
+    var moveTime = 1;
 
     public function new()
     {
@@ -63,6 +66,9 @@ class PuzzleScene extends Scene
         disposeIndicator.x = disposeX * gridX;
         disposeIndicator.y = disposeY * gridY;
         disposeIndicator.layer = DisposalLayer;
+
+        timer = new Timer(playAreaWidth, 1, 10);
+        add(timer);
     }
 
     private function handleInput() {
@@ -89,7 +95,10 @@ class PuzzleScene extends Scene
         if (!validMove || robot.isMoving || bomb.isMoving)
             return;
 
-        moveRobot(moveX, moveY);
+        if (timer.sub(moveTime))
+        {
+            moveRobot(moveX, moveY);
+        }
     }
 
     private function onRobotMoveFinished(dirX:Int, dirY:Int) {
@@ -198,4 +207,5 @@ class PuzzleScene extends Scene
     var level:Level;
     var bomb:Bomb;
     var resetPrime:Bool;
+    var timer:Timer;
 }
