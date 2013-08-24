@@ -76,7 +76,7 @@ class PuzzleScene extends Scene
         add(level);
         level.layer = LevelLayer;
 
-        robot = new Robot(levelLoader.robot.x * gridWidth, levelLoader.robot.y * gridHeight);
+        robot = new Robot(levelLoader.robot.x * gridWidth, levelLoader.robot.y * gridHeight, level);
         add(robot);
         robot.layer = EntityLayer;
         level.addPawn(robot);

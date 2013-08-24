@@ -1,6 +1,7 @@
 package level;
  
 import com.haxepunk.Entity;
+import com.haxepunk.Tween;
 import com.haxepunk.masks.Grid;
 import com.haxepunk.graphics.prototype.Rect;
 import com.haxepunk.graphics.Tilemap;
@@ -107,9 +108,39 @@ class Level extends Entity
         }
     }
 
+    public function shiver(dirX:Int, dirY:Int)
+    {
+        shiverFrame = 10;
+        shiverDir = dirY;
+    }
+
+    public override function update()
+    {
+        super.update();
+        if (shiverFrame > 0)
+        {
+            var val = shiverFrame % 2 * 5 - 2.5;
+            if (shiverDir == 0)
+                map.x = val;
+            else
+                map.y = val;
+
+            shiverFrame -= 1;
+            if (shiverFrame == 0)
+            {
+                if (shiverDir == 0)
+                    map.x = 0;
+                else
+                    map.y = 0;
+            }
+        }
+    }
+
     var map:Tilemap;
     var grid:Grid;
     var obstacles:Array<Blockable>;
     var sensors:Array<Sensor>;
     var pawns:Array<Pawn>;
+    var shiverFrame:Int;
+    var shiverDir:Int;
 }

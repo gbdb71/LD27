@@ -1,6 +1,7 @@
 package entities;
  
 import com.haxepunk.Entity;
+import level.Level;
 import com.haxepunk.graphics.Emitter;
 import scenes.PuzzleScene;
 import com.haxepunk.graphics.prototype.Circle;
@@ -52,11 +53,13 @@ class Robot extends Entity implements Pawn
     var emitter:Emitter;
     var dirX:Int;
     var dirY:Int;
+    var level:Level;
 
-    public function new(x:Float, y:Float)
+    public function new(x:Float, y:Float, level:Level)
     {
         super(x, y);
         graphic =  new Circle(4, 0xAAAAAA);
+        this.level = level;
         type="robot";
         slideBehaviour = new SlideBehaviour(this);
         slideBehaviour.onMoveFinished = onFinished;
@@ -102,6 +105,7 @@ class Robot extends Entity implements Pawn
             emitter.emit(particleType + "A", x + 4 + dirX * 4, y + 4 + dirY * 4);
             emitter.emit(particleType + "B", x + 4 + dirX * 4, y + 4 + dirY * 4);
         }
+        level.shiver(dirX, dirY);
         monitor.setCompensation(0,0);
         if (onMoveFinished != null)
             onMoveFinished();
