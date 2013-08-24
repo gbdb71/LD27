@@ -1,6 +1,7 @@
 package scenes;
  
 import com.haxepunk.Scene;
+import utils.TriggerMonitor;
 import flash.display.Loader;
 import com.haxepunk.utils.Input;
 import com.haxepunk.masks.Grid;
@@ -58,6 +59,8 @@ class PuzzleScene extends Scene
         add(bomb);
         bomb.layer = EntityLayer;
         level.markObstacle(bombX, bombY, true, BombID);
+        bombTriggerMonitor = new TriggerMonitor(bomb, level, gridX, gridY);
+        bombTriggerMonitor.onTrigger = checkBombTrigger;
 
         var disposeX = Math.floor(levelLoader.dispose.x);
         var disposeY = Math.floor(levelLoader.dispose.y);
@@ -138,9 +141,10 @@ class PuzzleScene extends Scene
         level.removeObstacle(BombID);
         level.markObstacle(target.x, target.y, true, BombID);
         bomb.move(target.x * gridX, target.y * gridY);
+        bombTriggerMonitor.setCompensation(dirX, dirY);
         bomb.onMoveFinished = function()
         {
-            checkBombDispose();
+            bombTriggerMonitor.setCompensation(0, 0);
         }
     }
 
@@ -161,23 +165,10 @@ class PuzzleScene extends Scene
         return { x : currentX, y : currentY };
     }
 
-    function checkBombDispose()
+    function checkBombTrigger(triggerID)
     {
-        var tileX = Math.floor(bomb.x / gridX);
-        var tileY = Math.floor(bomb.y / gridY);
-
-        if (bomb.isMoving)
+        if(triggerID == DisposalID)
         {
-            if (bomb.directionX < 0)
-                tileX += 1;
-            if (bomb.directionY < 0)
-                tileY += 1;
-        }
-
-        if(level.getObstacle(tileX, tileY) == DisposalID)
-        {
-            bomb.x = tileX * gridX;
-            bomb.y = tileY * gridY;
             bomb.dispose();
             level.removeObstacle(BombID);
         }
@@ -187,10 +178,7 @@ class PuzzleScene extends Scene
     {
         super.update();
         handleInput();
-        if (bomb.isMoving)
-        {
-            checkBombDispose();
-        }
+        bombTriggerMonitor.update();
 
         if (Input.check("reset"))
         {
@@ -208,4 +196,5 @@ class PuzzleScene extends Scene
     var bomb:Bomb;
     var resetPrime:Bool;
     var timer:Timer;
+    var bombTriggerMonitor:TriggerMonitor;
 }
