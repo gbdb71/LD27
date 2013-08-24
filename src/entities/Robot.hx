@@ -1,10 +1,10 @@
 package entities;
  
 import com.haxepunk.Entity;
+import com.haxepunk.Graphic;
 import com.haxepunk.Tween;
 import com.haxepunk.utils.Ease;
 import com.haxepunk.tweens.motion.LinearMotion;
-import com.haxepunk.graphics.prototype.Circle;
  
 class Robot extends Entity
 {
@@ -12,11 +12,12 @@ class Robot extends Entity
 
     var moveTween:LinearMotion;
     public var isMoving(default, null):Bool;
+    public var onMoveFinished:Void->Void;
 
-    public function new(x:Float, y:Float)
+    public function new(x:Float, y:Float, graphic:Graphic)
     {
         super(x, y);
-        graphic = new Circle(4, 0xAAAAAA);
+        this.graphic = graphic;
         setHitbox(8, 8);
         moveTween = new LinearMotion(moveComplete);
         addTween(moveTween);
@@ -27,13 +28,17 @@ class Robot extends Entity
         isMoving = false;
         x = moveTween.x;
         y = moveTween.y;
+        if (onMoveFinished != null)
+        {
+            onMoveFinished();
+        }
     }
 
-    public function move(toX:Float, toY:Float)
+    public function move(toX:Float, toY:Float, ease:EaseFunction)
     {
         if (!isMoving)
         {
-            moveTween.setMotionSpeed(x, y, toX, toY, speed, Ease.quadIn);
+            moveTween.setMotionSpeed(x, y, toX, toY, speed, ease);
             isMoving = true;
         }
     }

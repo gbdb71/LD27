@@ -5,11 +5,16 @@ import com.haxepunk.utils.Input;
 import com.haxepunk.masks.Grid;
 import com.haxepunk.graphics.Tilemap;
 import com.haxepunk.HXP;
+import com.haxepunk.graphics.prototype.Circle;
+import com.haxepunk.graphics.prototype.Rect;
+import com.haxepunk.utils.Ease;
 import entities.Robot;
 import entities.Level;
  
 class PuzzleScene extends Scene
 {
+    private static inline var BombID:Int = 0;
+
     var gridX = 8;
     var gridY = 8;
 
@@ -20,7 +25,7 @@ class PuzzleScene extends Scene
 
     public override function begin()
     {
-        robot = new Robot(5 * gridX, 7 * gridY);
+        robot = new Robot(5 * gridX, 7 * gridY, new Circle(4, 0xAAAAAA));
         add(robot);
 
         var map = new Tilemap("gfx/leveltiles.png", Math.floor(HXP.screen.width / HXP.screen.scale), Math.floor(HXP.screen.height / HXP.screen.scale), gridX, gridY);
@@ -35,6 +40,11 @@ class PuzzleScene extends Scene
         grid.setTile(3, 8, true);
         level = new Level(map, grid);
         add(level);
+
+        bomb = new Robot(5 * gridX, 9 * gridY, new Rect(8, 8, 0xFF2222));
+        add(bomb);
+
+        level.markObstacle(5, 9, true, BombID);
     }
 
     private function handleInput() {
@@ -58,32 +68,67 @@ class PuzzleScene extends Scene
         }
 
         var validMove = !(moveX != 0 && moveY != 0) && moveX + moveY != 0;
-        if (!validMove || robot.isMoving)
+        if (!validMove || robot.isMoving || bomb.isMoving)
             return;
 
         moveRobot(moveX, moveY);
     }
 
-    private function moveRobot(dirX:Int, dirY:Int) {
-        var startRobotTileX = Math.floor(robot.x / gridX);
-        var startRobotTileY = Math.floor(robot.y / gridY);
-        var robotTileX:Int = startRobotTileX;
-        var robotTileY:Int = startRobotTileY;
-        while (!level.isSolid(robotTileX, robotTileY))
-        {
-            robotTileX += dirX;
-            robotTileY += dirY;
-        }
-        robotTileX -= dirX;
-        robotTileY -= dirY;
+    private function onRobotMoveFinished(dirX:Int, dirY:Int) {
+        var robotColliderX = Math.floor(robot.x / gridX) + dirX;
+        var robotColliderY = Math.floor(robot.y / gridY) + dirY;
 
-        if (robotTileX == startRobotTileX && robotTileY == startRobotTileY)
+        var obstacleID = level.getObstacle(robotColliderX, robotColliderY);
+        if (obstacleID == BombID)
+        {
+            moveBomb(dirX, dirY);
+        }
+    }
+
+    private function moveRobot(dirX:Int, dirY:Int) {
+        var startX = Math.floor(robot.x / gridX);
+        var startY = Math.floor(robot.y / gridY);
+        var target = determineSlide(startX, startY, dirX, dirY);
+
+        if (target.x == startX && target.y == startY)
         {
             return;
         }
-        robot.move(robotTileX * gridX, robotTileY * gridY);
+        robot.move(target.x * gridX, target.y * gridY, Ease.quadIn);
+        robot.onMoveFinished = function() {
+            onRobotMoveFinished(dirX, dirY);
+        }
     }
 
+    private function moveBomb(dirX:Int, dirY:Int) {
+        var startX = Math.floor(bomb.x / gridX);
+        var startY = Math.floor(bomb.y / gridY);
+        var target = determineSlide(startX, startY, dirX, dirY);
+        if (target.x == startX && target.y == startY)
+        {
+            return;
+        }
+        level.removeObstacle(BombID);
+        level.markObstacle(target.x, target.y, true, BombID);
+        bomb.move(target.x * gridX, target.y * gridY, null);
+    }
+
+    private function determineSlide(startX:Int, startY:Int, dirX:Int, dirY:Int):Dynamic
+    {
+        var currentX = startX;
+        var currentY = startY;
+        do
+        {
+            currentX += dirX;
+            currentY += dirY;
+        }
+        while (!level.isSolid(currentX, currentY));
+
+        currentX -= dirX;
+        currentY -= dirY;
+
+        return { x : currentX, y : currentY };
+    }
 
     public override function update()
     {
@@ -93,4 +138,5 @@ class PuzzleScene extends Scene
 
     var robot:Robot;
     var level:Level;
+    var bomb:Robot;
 }
