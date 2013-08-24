@@ -1,6 +1,8 @@
 package scenes;
  
 import com.haxepunk.Scene;
+import entities.Switch;
+import entities.Door;
 import entities.Ramp;
 import entities.Disposer;
 import utils.TriggerMonitor;
@@ -19,6 +21,7 @@ import entities.Breakable;
 import level.LevelLoader;
 import level.Level;
 import level.Blockable;
+import utils.DoorControl;
  
 class PuzzleScene extends Scene
 {
@@ -61,6 +64,7 @@ class PuzzleScene extends Scene
 
     public override function begin()
     {
+        doorControl = new DoorControl();
         var levelLoader = new LevelLoader();
         levelLoader.parse("levels/level1.tmx");
 
@@ -108,6 +112,25 @@ class PuzzleScene extends Scene
             var ramp = new Ramp(toX(rampX), toY(rampY), rampDef.dirX, rampDef.dirY);
             level.addObstacle(ramp);
             add(ramp);
+        }
+
+        for (doorDef in levelLoader.doors)
+        {
+            var doorX = Math.floor(doorDef.point.x);
+            var doorY = Math.floor(doorDef.point.y);
+            var door = new Door(toX(doorX), toY(doorY));
+            level.addObstacle(door);
+            add(door);
+            doorControl.add(doorDef.name, door);
+        }
+
+        for (switchDef in levelLoader.switches)
+        {
+            var switchX = Math.floor(switchDef.point.x);
+            var switchY = Math.floor(switchDef.point.y);
+            var swtch = new Switch(toX(switchX), toY(switchY), switchDef.target, doorControl);
+            level.addSensor(swtch);
+            add(swtch);
         }
 
         timer = new Timer(playAreaWidth, 1, 10);
@@ -213,4 +236,5 @@ class PuzzleScene extends Scene
     var bomb:Bomb;
     var resetPrime:Bool;
     var timer:Timer;
+    var doorControl:DoorControl;
 }

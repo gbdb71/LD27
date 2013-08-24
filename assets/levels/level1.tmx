@@ -33,5 +33,11 @@
     <property name="dirY" value="0"/>
    </properties>
   </object>
+  <object type="switch" x="61" y="60">
+   <properties>
+    <property name="target" value="gate1"/>
+   </properties>
+  </object>
+  <object name="gate1" type="door" x="75" y="52"/>
  </objectgroup>
 </map>

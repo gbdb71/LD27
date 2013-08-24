@@ -5,6 +5,8 @@ import haxe.xml.Fast;
 import openfl.Assets;
 
 typedef RampDef = {point:Point, dirX:Int, dirY:Int};
+typedef DoorDef = {point:Point, name:String};
+typedef SwitchDef = {point:Point, target:String};
 
 class LevelLoader {
 
@@ -13,11 +15,15 @@ class LevelLoader {
     public var dispose(default, null):Point;
     public var breakaway(default, null):Array<Point>;
     public var ramps(default, null):Array<RampDef>;
+    public var doors(default, null):Array<DoorDef>;
+    public var switches(default, null):Array<SwitchDef>;
     public var layout(default, null):String;
     
     public function new() {
         breakaway = new Array<Point>();
         ramps = new Array<RampDef>();
+        doors = new Array<DoorDef>();
+        switches = new Array<SwitchDef>();
     }
 
     public function parse(filename:String)
@@ -60,6 +66,20 @@ class LevelLoader {
                 }
                 var ramp:RampDef = { point : point, dirX:dirX, dirY:dirY};
                 ramps.push(ramp);
+            }
+            else if (obj.att.type == "door")
+            {
+                var point = new Point(x, y);
+                var name = obj.att.name;
+                var door:DoorDef = { point : point, name:name };
+                doors.push(door);
+            }
+            else if (obj.att.type == "switch")
+            {
+                var point = new Point(x, y);
+                var target = obj.node.properties.nodes.property.first().att.value;
+                var swtch:SwitchDef = { point : point, target:target };
+                switches.push(swtch);
             }
         }
     }
