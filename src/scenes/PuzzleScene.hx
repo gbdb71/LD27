@@ -1,6 +1,7 @@
 package scenes;
  
 import com.haxepunk.Scene;
+import entities.Ramp;
 import entities.Disposer;
 import utils.TriggerMonitor;
 import flash.display.Loader;
@@ -98,6 +99,15 @@ class PuzzleScene extends Scene
             var breakable = new Breakable(breakX * gridWidth, breakY * gridHeight);
             level.addObstacle(breakable);
             add(breakable);
+        }
+
+        for (rampDef in levelLoader.ramps)
+        {
+            var rampX = Math.floor(rampDef.point.x);
+            var rampY = Math.floor(rampDef.point.y);
+            var ramp = new Ramp(toX(rampX), toY(rampY), rampDef.dirX, rampDef.dirY);
+            level.addObstacle(ramp);
+            add(ramp);
         }
 
         timer = new Timer(playAreaWidth, 1, 10);
