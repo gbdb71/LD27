@@ -39,4 +39,10 @@ class Bomb extends Entity
         super.update();
         slideBehaviour.update();
     }
+
+    public function dispose()
+    {
+        slideBehaviour.stop();
+        graphic = null;
+    }
 }

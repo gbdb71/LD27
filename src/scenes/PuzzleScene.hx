@@ -15,6 +15,11 @@ import entities.Level;
 class PuzzleScene extends Scene
 {
     private static inline var BombID:Int = 0;
+    private static inline var DisposalID:Int = 1;
+
+    private static inline var EntityLayer:Int = 0;
+    private static inline var DisposalLayer:Int = 1;
+    private static inline var LevelLayer:Int = 2;
 
     var gridX = 8;
     var gridY = 8;
@@ -28,6 +33,7 @@ class PuzzleScene extends Scene
     {
         robot = new Robot(5 * gridX, 7 * gridY);
         add(robot);
+        robot.layer = EntityLayer;
 
         var map = new Tilemap("gfx/leveltiles.png", Math.floor(HXP.screen.width / HXP.screen.scale), Math.floor(HXP.screen.height / HXP.screen.scale), gridX, gridY);
         map.setTile(10, 7, 0);
@@ -41,11 +47,18 @@ class PuzzleScene extends Scene
         grid.setTile(3, 8, true);
         level = new Level(map, grid);
         add(level);
+        level.layer = LevelLayer;
 
         bomb = new Bomb(5 * gridX, 9 * gridY);
         add(bomb);
+        bomb.layer = EntityLayer;
 
         level.markObstacle(5, 9, true, BombID);
+        level.markObstacle(15, 14, false, DisposalID);
+        var disposeIndicator = addGraphic(new Rect(8, 8, 0x00FF00));
+        disposeIndicator.x = 15 * gridX;
+        disposeIndicator.y = 14 * gridY;
+        disposeIndicator.layer = DisposalLayer;
     }
 
     private function handleInput() {
@@ -135,6 +148,17 @@ class PuzzleScene extends Scene
     {
         super.update();
         handleInput();
+        if (bomb.isMoving)
+        {
+            var tileX = Math.floor(bomb.x / gridX);
+            var tileY = Math.floor(bomb.y / gridY);
+            if(level.getObstacle(tileX, tileY) == DisposalID)
+            {
+                bomb.x = tileX * gridX;
+                bomb.y = tileY * gridY;
+                bomb.dispose();
+            }
+        }
     }
 
     var robot:Robot;

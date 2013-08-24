@@ -40,6 +40,15 @@ class SlideBehaviour {
         }
     }
 
+    public function stop()
+    {
+        if (isMoving)
+        {
+            isMoving = false;
+            moveTween.cancel();
+        }
+    }
+
     public function update()
     {
         if (isMoving)
