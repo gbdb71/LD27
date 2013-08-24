@@ -71,19 +71,19 @@ class Robot extends Entity implements Pawn
         var name = "horizontalA";
         emitter.newType(name, [0]);
         emitter.setAlpha(name, 1, 0);
-        emitter.setMotion(name, 155, 5, 1, 50, 5, 1, Ease.quadOut);
+        emitter.setMotion(name, 155, 5, 1, 50, 5, 0.5, Ease.quadOut);
         name = "horizontalB";
         emitter.newType(name, [0]);
         emitter.setAlpha(name, 1, 0);
-        emitter.setMotion(name, -25, 5, 1, 50, 5, 1, Ease.quadOut);
+        emitter.setMotion(name, -25, 5, 1, 50, 5, 0.5, Ease.quadOut);
         var name = "verticalA";
         emitter.newType(name, [0]);
         emitter.setAlpha(name, 1, 0);
-        emitter.setMotion(name, 65, 5, 1, 50, 5, 1, Ease.quadOut);
+        emitter.setMotion(name, 65, 5, 1, 50, 5, 0.5, Ease.quadOut);
         name = "verticalB";
         emitter.newType(name, [0]);
         emitter.setAlpha(name, 1, 0);
-        emitter.setMotion(name, 255, 5, 1, 50, 5, 1, Ease.quadOut);
+        emitter.setMotion(name, 255, 5, 1, 50, 5, 0.5, Ease.quadOut);
 
         addGraphic(emitter);
     }
