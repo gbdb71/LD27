@@ -1,6 +1,7 @@
 package scenes;
  
 import com.haxepunk.Scene;
+import flash.display.Loader;
 import com.haxepunk.utils.Input;
 import com.haxepunk.masks.Grid;
 import com.haxepunk.graphics.Tilemap;
@@ -11,6 +12,7 @@ import com.haxepunk.utils.Ease;
 import entities.Robot;
 import entities.Bomb;
 import entities.Level;
+import utils.LevelLoader;
  
 class PuzzleScene extends Scene
 {
@@ -33,33 +35,33 @@ class PuzzleScene extends Scene
 
     public override function begin()
     {
-        robot = new Robot(5 * gridX, 7 * gridY);
+        var levelLoader = new LevelLoader();
+        levelLoader.parse("levels/level1.tmx");
+        robot = new Robot(levelLoader.robot.x * gridX, levelLoader.robot.y * gridY);
         add(robot);
         robot.layer = EntityLayer;
 
         var map = new Tilemap("gfx/leveltiles.png", playAreaWidth, playAreaHeight, gridX, gridY);
-        map.setTile(10, 7, 0);
-        map.setTile(9, 2, 0);
-        map.setTile(2, 3, 0);
-        map.setTile(3, 8, 0);
+        map.loadFromString(levelLoader.layout);
         var grid = new Grid(map.width, map.height, map.tileWidth, map.tileHeight);
-        grid.setTile(10, 7, true);
-        grid.setTile(9, 2, true);
-        grid.setTile(2, 3, true);
-        grid.setTile(3, 8, true);
+        grid.loadFromString(levelLoader.layout);
         level = new Level(map, grid);
         add(level);
         level.layer = LevelLayer;
 
-        bomb = new Bomb(5 * gridX, 9 * gridY);
+        var bombX = Math.floor(levelLoader.bomb.x);
+        var bombY = Math.floor(levelLoader.bomb.y);
+        bomb = new Bomb(bombX * gridX, bombY * gridY);
         add(bomb);
         bomb.layer = EntityLayer;
+        level.markObstacle(bombX, bombY, true, BombID);
 
-        level.markObstacle(5, 9, true, BombID);
-        level.markObstacle(15, 14, false, DisposalID);
+        var disposeX = Math.floor(levelLoader.dispose.x);
+        var disposeY = Math.floor(levelLoader.dispose.y);
+        level.markObstacle(disposeX, disposeY, false, DisposalID);
         var disposeIndicator = addGraphic(new Rect(8, 8, 0x00FF00));
-        disposeIndicator.x = 15 * gridX;
-        disposeIndicator.y = 14 * gridY;
+        disposeIndicator.x = disposeX * gridX;
+        disposeIndicator.y = disposeY * gridY;
         disposeIndicator.layer = DisposalLayer;
     }
 
