@@ -16,7 +16,7 @@ class Disposer extends Entity implements Sensor
         graphic = new Rect(8, 8, 0x22FF22);
     }
 
-    public function OnTile(pawn:Pawn, col:Int, row:Int)
+    public function onTile(pawn:Pawn, col:Int, row:Int)
     {
         if (Std.is(pawn, Bomb))
         {

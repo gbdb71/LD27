@@ -62,9 +62,6 @@ class PuzzleScene extends Scene
     {
         var levelLoader = new LevelLoader();
         levelLoader.parse("levels/level1.tmx");
-        robot = new Robot(levelLoader.robot.x * gridWidth, levelLoader.robot.y * gridHeight);
-        add(robot);
-        robot.layer = EntityLayer;
 
         var map = new Tilemap("gfx/leveltiles.png", playAreaWidth, playAreaHeight, gridWidth, gridHeight);
         map.loadFromString(levelLoader.layout);
@@ -74,14 +71,18 @@ class PuzzleScene extends Scene
         add(level);
         level.layer = LevelLayer;
 
+        robot = new Robot(levelLoader.robot.x * gridWidth, levelLoader.robot.y * gridHeight);
+        add(robot);
+        robot.layer = EntityLayer;
+        level.addPawn(robot);
+
         var bombX = Math.floor(levelLoader.bomb.x);
         var bombY = Math.floor(levelLoader.bomb.y);
         bomb = new Bomb(bombX * gridWidth, bombY * gridHeight);
         add(bomb);
         bomb.layer = EntityLayer;
         level.addObstacle(bomb);
-        bombTriggerMonitor = new TriggerMonitor(bomb, level, gridWidth, gridHeight);
-        bombTriggerMonitor.onTrigger = checkBombTrigger;
+        level.addPawn(bomb);
 
         var disposeX = Math.floor(levelLoader.dispose.x);
         var disposeY = Math.floor(levelLoader.dispose.y);
@@ -127,10 +128,7 @@ class PuzzleScene extends Scene
         if (!validMove || robot.isMoving || bomb.isMoving)
             return;
 
-        if (timer.sub(moveTime))
-        {
-            moveRobot(moveX, moveY);
-        }
+        moveRobot(moveX, moveY);
     }
 
     private function onRobotMoveFinished(dirX:Int, dirY:Int) {
@@ -161,6 +159,7 @@ class PuzzleScene extends Scene
         {
             return;
         }
+        timer.sub(moveTime);
         robot.move(target.x, target.y);
         robot.onMoveFinished = function() {
             onRobotMoveFinished(dirX, dirY);
@@ -176,33 +175,12 @@ class PuzzleScene extends Scene
             return;
         }
         bomb.move(target.x, target.y);
-        bombTriggerMonitor.setCompensation(dirX, dirY);
-        bomb.onMoveFinished = function()
-        {
-            bombTriggerMonitor.setCompensation(0, 0);
-        }
-    }
-
-    function checkBombTrigger(blockables:Array<Blockable>)
-    {
-        /*
-        for (id in triggerIDs)
-        {
-            if(id == DisposalID)
-            {
-                bomb.dispose();
-                level.removeObstacle(bomb);
-                break;
-            }
-        }
-        */
     }
 
     public override function update()
     {
         super.update();
         handleInput();
-        bombTriggerMonitor.update();
 
         if (Input.check("reset"))
         {
@@ -220,5 +198,4 @@ class PuzzleScene extends Scene
     var bomb:Bomb;
     var resetPrime:Bool;
     var timer:Timer;
-    var bombTriggerMonitor:TriggerMonitor;
 }

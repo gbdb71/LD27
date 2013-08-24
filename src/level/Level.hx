@@ -17,6 +17,7 @@ class Level extends Entity
         type = "level";
         obstacles = new Array<Blockable>();
         sensors = new Array<Sensor>();
+        pawns = new Array<Pawn>();
     }
 
     function isSolid(startX:Int, startY:Int, column:Int, row:Int):Bool {
@@ -81,8 +82,34 @@ class Level extends Entity
         sensors.remove(sensor);
     }
 
+    public function addPawn(pawn:Pawn)
+    {
+        pawn.onTileArrive = function(fromCol:Int, fromRow:Int, toCol:Int, toRow:Int)
+        {
+            onPawnMove(pawn, fromCol, fromRow, toCol, toRow);
+        }
+        pawns.push(pawn);
+    }
+
+    public function removePawn(pawn:Pawn)
+    {
+        if (pawns.remove(pawn))
+        {
+            pawn.onTileArrive = null;
+        }
+    }
+
+    function onPawnMove(pawn:Pawn, fromCol:Int, fromRow:Int, toCol:Int, toRow:Int)
+    {
+        for (sensor in sensors)
+        {
+            sensor.onTile(pawn, toCol, toRow);
+        }
+    }
+
     var map:Tilemap;
     var grid:Grid;
     var obstacles:Array<Blockable>;
     var sensors:Array<Sensor>;
+    var pawns:Array<Pawn>;
 }

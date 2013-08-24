@@ -11,7 +11,7 @@ class Robot extends Entity implements Pawn
 {
     public var isMoving(get,never):Bool;
     public var onMoveFinished(never,set):Void->Void;
-    public var onTileArrive:Int->Int->Int->Int;
+    public var onTileArrive:OnTileArrive;
     public var column(get,set):Int;
     public var row(get,set):Int;
 
