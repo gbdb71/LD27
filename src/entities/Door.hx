@@ -17,7 +17,7 @@ class Door extends Entity implements Blockable
         super(x, y);
         sprite = new Spritemap("gfx/door.png", 8, 8);
         sprite.add("idle", [0, 1], 5, true);
-        sprite.add("open", [2, 3, 4, 5, 6, 7, 8], 10, false);
+        sprite.add("open", [2, 3, 4, 5, 6, 7], 10, false);
         graphic = sprite;
         sprite.play("idle");
     }
