@@ -1,6 +1,7 @@
 package level;
  
 import com.haxepunk.Entity;
+import com.haxepunk.HXP;
 import com.haxepunk.Tween;
 import com.haxepunk.masks.Grid;
 import com.haxepunk.graphics.prototype.Rect;
@@ -119,19 +120,19 @@ class Level extends Entity
         super.update();
         if (shiverFrame > 0)
         {
-            var val = shiverFrame % 2 * 5 - 2.5;
+            var val = shiverFrame % 2 * 6 - 3;
             if (shiverDir == 0)
-                map.x = val;
+                HXP.screen.x = val;
             else
-                map.y = val;
+                HXP.screen.y = val;
 
             shiverFrame -= 1;
             if (shiverFrame == 0)
             {
                 if (shiverDir == 0)
-                    map.x = 0;
+                    HXP.screen.x = 0;
                 else
-                    map.y = 0;
+                    HXP.screen.y = 0;
             }
         }
     }
