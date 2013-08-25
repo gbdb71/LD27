@@ -67,7 +67,7 @@ class PuzzleScene extends Scene
     {
         doorControl = new DoorControl();
         var levelLoader = new LevelLoader();
-        levelLoader.parse("levels/breakable-gate.tmx");
+        levelLoader.parse("levels/breakable-dual.tmx");
 
         var map = new Tilemap("gfx/leveltiles.png", playAreaWidth, playAreaHeight, gridWidth, gridHeight);
         map.loadFrom2DArray(levelLoader.tilemap);
