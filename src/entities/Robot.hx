@@ -1,6 +1,7 @@
 package entities;
  
 import com.haxepunk.Entity;
+import com.haxepunk.graphics.Spritemap;
 import level.Level;
 import com.haxepunk.graphics.Emitter;
 import scenes.PuzzleScene;
@@ -54,11 +55,18 @@ class Robot extends Entity implements Pawn
     var dirX:Int;
     var dirY:Int;
     var level:Level;
+    var sprites:Spritemap;
 
     public function new(x:Float, y:Float, level:Level)
     {
         super(x, y);
-        graphic =  new Circle(4, 0xAAAAAA);
+        sprites = new Spritemap("gfx/robot.png", 8, 8);
+        sprites.add("right", [0]);
+        sprites.add("left", [1]);
+        sprites.add("down", [2]);
+        sprites.add("up", [3]);
+        graphic = sprites;
+        sprites.play("left");
         this.level = level;
         type="robot";
         slideBehaviour = new SlideBehaviour(this);
@@ -117,6 +125,14 @@ class Robot extends Entity implements Pawn
         var toY = PuzzleScene.toY(toRow);
         dirX = HXP.sign(toX - x);
         dirY = HXP.sign(toY - y);
+        var animation = "left";
+        if (dirX == 1)
+            animation = "right";
+        else if (dirY == -1)
+            animation = "up";
+        else if (dirY == 1)
+            animation = "down";
+        sprites.play(animation);
         monitor.setCompensation(dirX, dirY);
         slideBehaviour.move(toX, toY, Ease.quadIn);
     }

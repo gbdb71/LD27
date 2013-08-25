@@ -1,6 +1,7 @@
 package entities;
  
 import com.haxepunk.HXP;
+import com.haxepunk.graphics.Spritemap;
 import scenes.PuzzleScene;
 import com.haxepunk.Entity;
 import com.haxepunk.graphics.prototype.Rect;
@@ -46,11 +47,15 @@ class Bomb extends Entity implements Pawn implements Blockable
 
     var slideBehaviour:SlideBehaviour;
     var triggerMonitor:TriggerMonitor;
+    var sprite:Spritemap;
 
     public function new(x:Float, y:Float)
     {
         super(x, y);
-        graphic = new Rect(8, 8, 0xFF2222);
+        sprite = new Spritemap("gfx/bomb.png", 8, 8);
+        sprite.add("idle", [0, 0, 0, 0, 1, 2, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 2, 0, 0, 1, 1, 1, 1], 3, true);
+        graphic = sprite;
+        sprite.play("idle");
         type="bomb";
         slideBehaviour = new SlideBehaviour(this);
         slideBehaviour.onMoveFinished = onFinished;
