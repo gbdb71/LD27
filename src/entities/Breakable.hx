@@ -1,6 +1,7 @@
 package entities;
  
 import com.haxepunk.Entity;
+import com.haxepunk.graphics.Image;
 import scenes.PuzzleScene;
 import level.Blockable;
 import com.haxepunk.graphics.prototype.Rect;
@@ -12,7 +13,7 @@ class Breakable extends Entity implements Blockable
     public function new(x:Float, y:Float)
     {
         super(x, y);
-        graphic = new Rect(8, 8, 0x2222FF);
+        graphic = new Image("gfx/breakable.png");
     }
 
     public function isSolid(column:Int, row:Int, originColumn:Int, originRow:Int):Bool
