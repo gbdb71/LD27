@@ -15,7 +15,8 @@ class LevelLoader {
     private static inline var BombGID:Int = 12;
     private static inline var RobotGID:Int = 13;
     private static inline var RampGIDStart:Int = 5;
-    private static inline var RampGIDEnd:Int = 9;
+    private static inline var RampGIDEnd:Int = 8;
+    private static inline var BreakableGID:Int = 9;
 
     public var bomb(default, null):Point;
     public var robot(default, null):Point;
@@ -102,12 +103,12 @@ class LevelLoader {
                 robot = new Point(x, y);
             else if (gid == DisposalGID || type == "dispose")
                 dispose = new Point(x, y);
-            else if (type == "breakable")
+            else if (gid == BreakableGID || type == "breakable")
             {
                 var breakable = new Point(x, y);
                 breakaway.push(breakable);
             }
-            else if ((gid >= RampGIDStart && gid < RampGIDEnd) || type == "ramp")
+            else if ((gid >= RampGIDStart && gid <= RampGIDEnd) || type == "ramp")
             {
                 var point = new Point(x, y);
                 var dirX = 0;
