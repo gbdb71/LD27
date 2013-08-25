@@ -17,6 +17,7 @@ class Bomb extends Entity implements Pawn implements Blockable
     public var onTileArrive:OnTileArrive;
     public var column(get,set):Int;
     public var row(get,set):Int;
+    public var isDisposed(get,never):Bool;
 
     function set_column(value):Int
     {
@@ -43,6 +44,11 @@ class Bomb extends Entity implements Pawn implements Blockable
     function get_isMoving():Bool
     {
         return slideBehaviour.isMoving;
+    }
+
+    function get_isDisposed()
+    {
+        return graphic == null;
     }
 
     var slideBehaviour:SlideBehaviour;

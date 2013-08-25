@@ -1,4 +1,5 @@
 import com.haxepunk.Engine;
+import level.LevelCollection;
 import com.haxepunk.utils.Key;
 import com.haxepunk.utils.Input;
 import com.haxepunk.HXP;
@@ -19,7 +20,9 @@ class Main extends Engine
 		HXP.console.enable();
 #end
         HXP.screen.scale = 4;
-		HXP.scene = new PuzzleScene();
+
+        var levels = LevelCollection.getAllLevels();
+		HXP.scene = new PuzzleScene(levels, 0);
 	}
 
 	public static function main() { new Main(); }

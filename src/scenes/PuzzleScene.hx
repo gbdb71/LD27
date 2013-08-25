@@ -58,17 +58,22 @@ class PuzzleScene extends Scene
     var playAreaHeight = 120;
     var levelTimer = 10;
     var moveTime = 1;
+    var levelsAvailable:Array<String>;
+    var levelIndex:Int;
 
-    public function new()
+    public function new(levelsAvailable:Array<String>, levelIndex:Int)
     {
         super();
+        this.levelsAvailable = levelsAvailable;
+        this.levelIndex = levelIndex;
     }
 
     public override function begin()
     {
         doorControl = new DoorControl();
         var levelLoader = new LevelLoader();
-        levelLoader.parse("levels/switch-shuffle.tmx");
+        var currentLevel = levelsAvailable[levelIndex];
+        levelLoader.parse("levels/" + currentLevel);
 
         var map = new Tilemap("gfx/leveltiles.png", playAreaWidth, playAreaHeight, gridWidth, gridHeight);
         map.loadFrom2DArray(levelLoader.tilemap);
@@ -139,14 +144,14 @@ class PuzzleScene extends Scene
             swtch.layer = DisposalLayer;
         }
 
-        timer = new Timer(playAreaWidth, 1, 10);
+        timer = new Timer(playAreaWidth, 0, 10);
         add(timer);
         timer.layer = HudLayer;
 
-        var levelIndex = new LevelIndex(playAreaWidth, playAreaHeight - 20);
-        levelIndex.setIndex(1, 10);
-        add(levelIndex);
-        levelIndex.layer = HudLayer;
+        var indexIndicator = new LevelIndex(playAreaWidth, playAreaHeight - 15);
+        indexIndicator.setIndex(levelIndex + 1, levelsAvailable.length);
+        add(indexIndicator);
+        indexIndicator.layer = HudLayer;
     }
 
     private function handleInput() {
@@ -230,6 +235,12 @@ class PuzzleScene extends Scene
     public override function update()
     {
         super.update();
+        if (bomb.isDisposed)
+        {
+            if (levelIndex + 1 < levelsAvailable.length)
+                HXP.scene = new PuzzleScene(levelsAvailable, levelIndex + 1);
+            return;
+        }
         handleInput();
 
         if (Input.check("reset"))
@@ -239,7 +250,7 @@ class PuzzleScene extends Scene
         else if (resetPrime)
         {
             resetPrime = false;
-            HXP.scene = new PuzzleScene();
+            HXP.scene = new PuzzleScene(levelsAvailable, levelIndex);
         }
     }
 
