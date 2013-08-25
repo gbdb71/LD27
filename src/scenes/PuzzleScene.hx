@@ -103,6 +103,7 @@ class PuzzleScene extends Scene
             var breakable = new Breakable(breakX * gridWidth, breakY * gridHeight);
             level.addObstacle(breakable);
             add(breakable);
+            breakable.layer = EntityLayer;
         }
 
         for (rampDef in levelLoader.ramps)
@@ -112,6 +113,7 @@ class PuzzleScene extends Scene
             var ramp = new Ramp(toX(rampX), toY(rampY), rampDef.dirX, rampDef.dirY);
             level.addObstacle(ramp);
             add(ramp);
+            ramp.layer = DisposalLayer;
         }
 
         for (doorDef in levelLoader.doors)
@@ -122,6 +124,7 @@ class PuzzleScene extends Scene
             level.addObstacle(door);
             add(door);
             doorControl.add(doorDef.name, door);
+            door.layer = EntityLayer;
         }
 
         for (switchDef in levelLoader.switches)
@@ -131,6 +134,7 @@ class PuzzleScene extends Scene
             var swtch = new Switch(toX(switchX), toY(switchY), switchDef.target, doorControl);
             level.addSensor(swtch);
             add(swtch);
+            swtch.layer = DisposalLayer;
         }
 
         timer = new Timer(playAreaWidth, 1, 10);

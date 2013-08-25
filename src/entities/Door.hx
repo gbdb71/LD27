@@ -1,6 +1,7 @@
 package entities;
  
 import com.haxepunk.Entity;
+import com.haxepunk.graphics.Spritemap;
 import com.haxepunk.HXP;
 import com.haxepunk.graphics.prototype.Rect;
 import level.Blockable;
@@ -9,13 +10,16 @@ import scenes.PuzzleScene;
 class Door extends Entity implements Blockable
 {
     var open:Bool;
-    var image:Rect;
+    var sprite:Spritemap;
 
     public function new(x:Float, y:Float)
     {
         super(x, y);
-        image = new Rect(8, 8, 0x663300);
-        addGraphic(image);
+        sprite = new Spritemap("gfx/door.png", 8, 8);
+        sprite.add("idle", [0, 1], 5, true);
+        sprite.add("open", [2, 3, 4, 5, 6, 7, 8], 10, false);
+        graphic = sprite;
+        sprite.play("idle");
     }
 
     public function isSolid(column:Int, row:Int, originColumn:Int, originRow:Int):Bool
@@ -25,16 +29,24 @@ class Door extends Entity implements Blockable
         return !open && column == thisColumn && row == thisRow;
     }
 
+    function onOpened()
+    {
+        graphic = null;
+        sprite.callbackFunc = null;
+    }
+
     public function setOpen(open:Bool)
     {
         this.open = open;
         if (open)
         {
-            graphic = null;
+            sprite.play("open");
+            sprite.callbackFunc = onOpened;
         }
         else
         {
-            graphic = image;
+            graphic = sprite;
+            sprite.play("idle");
         }
     }
 }

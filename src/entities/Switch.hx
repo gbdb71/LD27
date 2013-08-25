@@ -1,6 +1,7 @@
 package entities;
  
 import com.haxepunk.Entity;
+import com.haxepunk.graphics.Spritemap;
 import scenes.PuzzleScene;
 import utils.DoorControl;
 import com.haxepunk.graphics.prototype.Circle;
@@ -14,11 +15,16 @@ class Switch extends Entity implements Sensor
     var control:DoorControl;
     var channel:String;
     var spent:Bool;
+    var sprite:Spritemap;
 
     public function new(x:Float, y:Float, channel:String, control:DoorControl)
     {
         super(x, y);
-        graphic = new Circle(4, 0x225522);
+        sprite = new Spritemap("gfx/switch.png", 8, 8);
+        sprite.add("normal", [0]);
+        sprite.add("pressed", [1]);
+        graphic = sprite;
+        sprite.play("normal");
         
         this.control = control;
         this.channel = channel;
@@ -32,6 +38,7 @@ class Switch extends Entity implements Sensor
         {
             spent = true;
             control.setOpen(channel, true);
+            sprite.play("pressed");
         }
     }
 }
