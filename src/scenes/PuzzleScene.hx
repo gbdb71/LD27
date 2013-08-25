@@ -12,10 +12,13 @@ import com.haxepunk.utils.Input;
 import com.haxepunk.masks.Grid;
 import com.haxepunk.graphics.Tilemap;
 import com.haxepunk.HXP;
+import com.haxepunk.Entity;
 import com.haxepunk.Sfx;
 import com.haxepunk.graphics.prototype.Circle;
 import com.haxepunk.graphics.prototype.Rect;
 import com.haxepunk.utils.Ease;
+import com.haxepunk.tweens.misc.NumTween;
+import com.haxepunk.Tween;
 import entities.Robot;
 import entities.Bomb;
 import entities.Timer;
@@ -73,11 +76,13 @@ class PuzzleScene extends Scene
         this.levelsAvailable = levelsAvailable;
         this.levelIndex = levelIndex;
         this.startWithExplosion = startWithExplosion;
+        allEntities = new Array<Entity>();
     }
 
     public override function begin()
     {
         HXP.screen.scale = 4;
+        HXP.screen.x = 0;
         doorControl = new DoorControl();
         var levelLoader = new LevelLoader();
         var currentLevel = levelsAvailable[levelIndex];
@@ -95,6 +100,7 @@ class PuzzleScene extends Scene
         add(robot);
         robot.layer = EntityLayer;
         level.addPawn(robot);
+        allEntities.push(robot);
 
         var bombX = Math.floor(levelLoader.bomb.x);
         var bombY = Math.floor(levelLoader.bomb.y);
@@ -103,6 +109,7 @@ class PuzzleScene extends Scene
         bomb.layer = EntityLayer;
         level.addObstacle(bomb);
         level.addPawn(bomb);
+        allEntities.push(bomb);
 
         var disposeX = Math.floor(levelLoader.dispose.x);
         var disposeY = Math.floor(levelLoader.dispose.y);
@@ -110,6 +117,7 @@ class PuzzleScene extends Scene
         dispose.layer = DisposalLayer;
         level.addSensor(dispose);
         add(dispose);
+        allEntities.push(dispose);
 
         for (breakPos in levelLoader.breakaway)
         {
@@ -119,6 +127,7 @@ class PuzzleScene extends Scene
             level.addObstacle(breakable);
             add(breakable);
             breakable.layer = EntityLayer;
+            allEntities.push(breakable);
         }
 
         for (rampDef in levelLoader.ramps)
@@ -129,6 +138,7 @@ class PuzzleScene extends Scene
             level.addObstacle(ramp);
             add(ramp);
             ramp.layer = DisposalLayer;
+            allEntities.push(ramp);
         }
 
         for (doorDef in levelLoader.doors)
@@ -140,6 +150,7 @@ class PuzzleScene extends Scene
             add(door);
             doorControl.add(doorDef.name, door);
             door.layer = EntityLayer;
+            allEntities.push(door);
         }
 
         for (switchDef in levelLoader.switches)
@@ -150,6 +161,7 @@ class PuzzleScene extends Scene
             level.addSensor(swtch);
             add(swtch);
             swtch.layer = DisposalLayer;
+            allEntities.push(swtch);
         }
 
         timer = new Timer(playAreaWidth, 0, 10);
@@ -170,6 +182,32 @@ class PuzzleScene extends Scene
             bombExplodeSound = new Sfx("sfx/bomb_explode.mp3");
             bombExplodeSound.play();
         }
+
+        transitionScroller = new NumTween(scrollComplete, TweenType.Persist);
+        addTween(transitionScroller);
+    }
+
+    function scrollToNextMap()
+    {
+        var levelLoader = new LevelLoader();
+        var nextLevel = levelsAvailable[levelIndex + 1];
+        levelLoader.parse("levels/" + nextLevel);
+        var map = new Tilemap("gfx/leveltiles.png", playAreaWidth, playAreaHeight, gridWidth, gridHeight);
+        map.loadFrom2DArray(levelLoader.tilemap);
+        var mapEntity = addGraphic(map);
+        mapEntity.x = 160;
+        mapEntity.layer = LevelLayer;
+        transitionScroller.tween(0, mapEntity.x, 2, Ease.quadInOut);
+        otherLevel = mapEntity;
+        for (entity in allEntities)
+        {
+            entity.visible = false;
+        }
+    }
+
+    function scrollComplete(Void):Void
+    {
+        HXP.scene = new PuzzleScene(levelsAvailable, levelIndex + 1);
     }
 
     private function handleInput() {
@@ -256,8 +294,16 @@ class PuzzleScene extends Scene
         super.update();
         if (bomb.isDisposed)
         {
-            if (levelIndex + 1 < levelsAvailable.length)
-                HXP.scene = new PuzzleScene(levelsAvailable, levelIndex + 1);
+            if (levelIndex + 1 < levelsAvailable.length && !transitioning)
+            {
+                transitioning = true;
+                scrollToNextMap();
+            }
+            if (otherLevel != null)
+            {
+                otherLevel.x = 160-Math.floor(transitionScroller.value);
+                level.x = -Math.floor(transitionScroller.value);
+            }
             return;
         }
         else if (timer.isDone() && !robot.isMoving && !bomb.isMoving)
@@ -284,4 +330,8 @@ class PuzzleScene extends Scene
     var resetPrime:Bool;
     var timer:Timer;
     var doorControl:DoorControl;
+    var transitioning:Bool;
+    var transitionScroller:NumTween;
+    var otherLevel:Entity;
+    var allEntities:Array<Entity>;
 }
