@@ -23,6 +23,7 @@ import level.LevelLoader;
 import level.Level;
 import level.Blockable;
 import utils.DoorControl;
+import entities.ExplosionFlash;
  
 class PuzzleScene extends Scene
 {
@@ -34,6 +35,7 @@ class PuzzleScene extends Scene
     private static inline var DisposalLayer:Int = 1;
     private static inline var LevelLayer:Int = 2;
     private static inline var HudLayer:Int = -1;
+    private static inline var ExplosionLayer:Int = -2;
 
     public static inline var gridWidth = 8;
     public static inline var gridHeight = 8;
@@ -60,12 +62,15 @@ class PuzzleScene extends Scene
     var moveTime = 1;
     var levelsAvailable:Array<String>;
     var levelIndex:Int;
+    var screenExplosion:ExplosionFlash;
+    var startWithExplosion:Bool;
 
-    public function new(levelsAvailable:Array<String>, levelIndex:Int)
+    public function new(levelsAvailable:Array<String>, levelIndex:Int, ?startWithExplosion:Bool)
     {
         super();
         this.levelsAvailable = levelsAvailable;
         this.levelIndex = levelIndex;
+        this.startWithExplosion = startWithExplosion;
     }
 
     public override function begin()
@@ -152,6 +157,14 @@ class PuzzleScene extends Scene
         indexIndicator.setIndex(levelIndex + 1, levelsAvailable.length);
         add(indexIndicator);
         indexIndicator.layer = HudLayer;
+
+        screenExplosion = new ExplosionFlash();
+        add(screenExplosion);
+        screenExplosion.layer = ExplosionLayer;
+        if (startWithExplosion)
+        {
+            screenExplosion.flash();
+        }
     }
 
     private function handleInput() {
@@ -239,6 +252,11 @@ class PuzzleScene extends Scene
         {
             if (levelIndex + 1 < levelsAvailable.length)
                 HXP.scene = new PuzzleScene(levelsAvailable, levelIndex + 1);
+            return;
+        }
+        else if (timer.isDone() && !robot.isMoving && !bomb.isMoving)
+        {
+            HXP.scene = new PuzzleScene(levelsAvailable, levelIndex, true);
             return;
         }
         handleInput();

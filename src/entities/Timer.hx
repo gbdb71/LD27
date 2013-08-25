@@ -23,6 +23,11 @@ class Timer extends Entity
         updateText();
     }
 
+    public function isDone():Bool
+    {
+        return timer <= 0;
+    }
+
     public function sub(amount:Float):Bool {
         if (timerTarget <= 0)
             return false;

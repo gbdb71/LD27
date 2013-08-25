@@ -43,7 +43,7 @@ class Bomb extends Entity implements Pawn implements Blockable
 
     function get_isMoving():Bool
     {
-        return slideBehaviour.isMoving;
+        return slideBehaviour.isMoving || disposing;
     }
 
     function get_isDisposed()
@@ -54,6 +54,7 @@ class Bomb extends Entity implements Pawn implements Blockable
     var slideBehaviour:SlideBehaviour;
     var triggerMonitor:TriggerMonitor;
     var sprite:Spritemap;
+    var disposing:Bool;
 
     public function new(x:Float, y:Float)
     {
@@ -105,10 +106,12 @@ class Bomb extends Entity implements Pawn implements Blockable
     function onAnimationFinished()
     {
         graphic = null;
+        disposing = false;
     }
 
     public function dispose()
     {
+        disposing = true;
         slideBehaviour.stop();
         sprite.play("fall");
         sprite.callbackFunc = onAnimationFinished;
