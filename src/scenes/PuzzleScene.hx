@@ -228,7 +228,8 @@ class PuzzleScene extends Scene
             return;
         }
         
-        if (!timer.sub(moveTime))
+        var distance = HXP.distance(startX, startY, target.x, target.y);
+        if (!timer.sub(moveTime, (20 - distance) * 1.3))
         {
             return;
         }

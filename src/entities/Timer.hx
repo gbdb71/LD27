@@ -12,6 +12,7 @@ class Timer extends Entity
     var timerText:Text;
     var timer:Float;
     var timerTarget:Float;
+    var speed:Float;
 
     public function new(x:Float, y:Float, timeout:Float)
     {
@@ -20,6 +21,7 @@ class Timer extends Entity
         timerTarget = timer;
         timerText = new Text("");
         graphic = timerText;
+        speed = countSpeed;
         updateText();
     }
 
@@ -28,11 +30,12 @@ class Timer extends Entity
         return timer <= 0;
     }
 
-    public function sub(amount:Float):Bool {
+    public function sub(amount:Float, speed:Float):Bool {
         if (timerTarget <= 0)
             return false;
 
         timerTarget -= amount * 1000;
+        this.speed = speed;
         updateText();
         return true;
     }
@@ -53,7 +56,7 @@ class Timer extends Entity
         if (timer != timerTarget)
         {
             var direction = HXP.sign(timerTarget - timer);
-            timer += countSpeed * direction;
+            timer += speed * direction;
             var newDirection = HXP.sign(timerTarget - timer);
             if (direction != newDirection)
             {
