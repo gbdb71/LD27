@@ -1,6 +1,7 @@
 package entities;
  
 import com.haxepunk.Entity;
+import com.haxepunk.Sfx;
 import com.haxepunk.graphics.Emitter;
 import flash.display.BitmapData;
 import com.haxepunk.utils.Ease;
@@ -12,10 +13,12 @@ class Breakable extends Entity implements Blockable
 {
     var collapsed:Bool;
     var emitter:Emitter;
+    var sfx:Sfx;
 
     public function new(x:Float, y:Float)
     {
         super(x, y);
+        sfx = new Sfx("sfx/collapse_breakable.mp3");
         graphic = new Image("gfx/breakable.png");
 
         emitter = new Emitter(new BitmapData(4,4, false, 0xFF8800), 2, 2);
@@ -46,5 +49,6 @@ class Breakable extends Entity implements Blockable
         }
 
         collapsed = true;
+        sfx.play();
     }
 }
