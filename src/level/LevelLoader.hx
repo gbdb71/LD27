@@ -17,6 +17,8 @@ class LevelLoader {
     private static inline var RampGIDStart:Int = 5;
     private static inline var RampGIDEnd:Int = 8;
     private static inline var BreakableGID:Int = 9;
+    private static inline var DoorGID:Int = 10;
+    private static inline var SwitchGID:Int = 17;
 
     public var bomb(default, null):Point;
     public var robot(default, null):Point;
@@ -141,17 +143,21 @@ class LevelLoader {
                 var ramp:RampDef = { point : point, dirX:dirX, dirY:dirY};
                 ramps.push(ramp);
             }
-            else if (type == "door")
+            else if (gid == DoorGID || type == "door")
             {
                 var point = new Point(x, y);
-                var name = obj.att.name;
+                var name = "default";
+                if (obj.has.name)
+                    name = obj.att.name;
                 var door:DoorDef = { point : point, name:name };
                 doors.push(door);
             }
-            else if (type == "switch")
+            else if (gid == SwitchGID || type == "switch")
             {
                 var point = new Point(x, y);
-                var target = obj.node.properties.nodes.property.first().att.value;
+                var target = "default";
+                if (obj.hasNode.properties && obj.node.properties.hasNode.property)
+                    target = obj.node.properties.nodes.property.first().att.value;
                 var swtch:SwitchDef = { point : point, target:target };
                 switches.push(swtch);
             }
