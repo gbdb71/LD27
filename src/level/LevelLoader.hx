@@ -14,6 +14,8 @@ class LevelLoader {
     private static inline var DisposalGID:Int = 11;
     private static inline var BombGID:Int = 12;
     private static inline var RobotGID:Int = 13;
+    private static inline var RampGIDStart:Int = 5;
+    private static inline var RampGIDEnd:Int = 9;
 
     public var bomb(default, null):Point;
     public var robot(default, null):Point;
@@ -105,17 +107,35 @@ class LevelLoader {
                 var breakable = new Point(x, y);
                 breakaway.push(breakable);
             }
-            else if (type == "ramp")
+            else if ((gid >= RampGIDStart && gid < RampGIDEnd) || type == "ramp")
             {
                 var point = new Point(x, y);
                 var dirX = 0;
                 var dirY = 0;
-                for (prop in obj.node.properties.nodes.property)
+                if (gid == -1)
                 {
-                    if (prop.att.name == "dirX")
-                        dirX = Std.parseInt(prop.att.value);
-                    if (prop.att.name == "dirY")
-                        dirY = Std.parseInt(prop.att.value);
+                    for (prop in obj.node.properties.nodes.property)
+                    {
+                        if (prop.att.name == "dirX")
+                            dirX = Std.parseInt(prop.att.value);
+                        if (prop.att.name == "dirY")
+                            dirY = Std.parseInt(prop.att.value);
+                    }
+                }
+                else
+                {
+                    var norm = gid - RampGIDStart;
+                    switch(norm)
+                    {
+                        case 0: 
+                            dirX = 1;
+                        case 1: 
+                            dirX = -1;
+                        case 2: 
+                            dirY = -1;
+                        case 3: 
+                            dirY = 1;
+                    }
                 }
                 var ramp:RampDef = { point : point, dirX:dirX, dirY:dirY};
                 ramps.push(ramp);
