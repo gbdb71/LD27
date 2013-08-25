@@ -1,19 +1,30 @@
 package entities;
  
 import com.haxepunk.Entity;
+import com.haxepunk.graphics.Emitter;
+import flash.display.BitmapData;
+import com.haxepunk.utils.Ease;
 import com.haxepunk.graphics.Image;
 import scenes.PuzzleScene;
 import level.Blockable;
-import com.haxepunk.graphics.prototype.Rect;
  
 class Breakable extends Entity implements Blockable
 {
     var collapsed:Bool;
+    var emitter:Emitter;
 
     public function new(x:Float, y:Float)
     {
         super(x, y);
         graphic = new Image("gfx/breakable.png");
+
+        emitter = new Emitter(new BitmapData(4,4, false, 0xFF8800), 2, 2);
+        emitter.relative = false;
+
+        var name = "dust";
+        emitter.newType(name, [0]);
+        emitter.setAlpha(name, 1, 0);
+        emitter.setMotion(name, 0, 5, 1, 360, 5, 0.5, Ease.quadOut);
     }
 
     public function isSolid(column:Int, row:Int, originColumn:Int, originRow:Int):Bool
@@ -28,7 +39,12 @@ class Breakable extends Entity implements Blockable
 
     public function collapse()
     {
-        graphic = null;
+        graphic = emitter;
+        for (i in 0...10)
+        {
+            emitter.emitInRectangle("dust", x, y,8,8);
+        }
+
         collapsed = true;
     }
 }
