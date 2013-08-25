@@ -54,6 +54,7 @@ class Bomb extends Entity implements Pawn implements Blockable
         super(x, y);
         sprite = new Spritemap("gfx/bomb.png", 8, 8);
         sprite.add("idle", [0, 0, 0, 0, 1, 2, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 2, 0, 0, 1, 1, 1, 1], 3, true);
+        sprite.add("fall", [3,4,5], 10, false);
         graphic = sprite;
         sprite.play("idle");
         type="bomb";
@@ -95,9 +96,15 @@ class Bomb extends Entity implements Pawn implements Blockable
         triggerMonitor.update();
     }
 
+    function onAnimationFinished()
+    {
+        graphic = null;
+    }
+
     public function dispose()
     {
         slideBehaviour.stop();
-        graphic = null;
+        sprite.play("fall");
+        sprite.callbackFunc = onAnimationFinished;
     }
 }

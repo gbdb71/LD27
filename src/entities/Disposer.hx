@@ -1,19 +1,18 @@
 package entities;
  
 import com.haxepunk.Entity;
+import com.haxepunk.graphics.Image;
 import entities.Bomb;
 import scenes.PuzzleScene;
 import level.Sensor;
 import level.Pawn;
 
-import com.haxepunk.graphics.prototype.Rect;
- 
 class Disposer extends Entity implements Sensor
 {
     public function new(x:Float, y:Float)
     {
         super(x, y);
-        graphic = new Rect(8, 8, 0x22FF22);
+        graphic = new Image("gfx/disposal.png");
     }
 
     public function onTile(pawn:Pawn, col:Int, row:Int)
