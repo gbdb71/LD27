@@ -69,7 +69,7 @@ class PuzzleScene extends Scene
         levelLoader.parse("levels/level1.tmx");
 
         var map = new Tilemap("gfx/leveltiles.png", playAreaWidth, playAreaHeight, gridWidth, gridHeight);
-        map.loadFromString(levelLoader.layout);
+        map.loadFrom2DArray(levelLoader.tilemap);
         var grid = new Grid(map.width, map.height, map.tileWidth, map.tileHeight);
         grid.loadFromString(levelLoader.layout);
         level = new Level(map, grid);

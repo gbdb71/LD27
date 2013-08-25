@@ -7,6 +7,7 @@ import openfl.Assets;
 typedef RampDef = {point:Point, dirX:Int, dirY:Int};
 typedef DoorDef = {point:Point, name:String};
 typedef SwitchDef = {point:Point, target:String};
+typedef Array2D = Array<Array<Int>>;
 
 class LevelLoader {
 
@@ -18,12 +19,52 @@ class LevelLoader {
     public var doors(default, null):Array<DoorDef>;
     public var switches(default, null):Array<SwitchDef>;
     public var layout(default, null):String;
+    public var tilemap(default, null):Array2D;
     
     public function new() {
         breakaway = new Array<Point>();
         ramps = new Array<RampDef>();
         doors = new Array<DoorDef>();
         switches = new Array<SwitchDef>();
+    }
+
+    function extractTileModel(levelData:String):Array2D
+    {
+        var tiles:Array2D = new Array2D();
+        for (line in levelData.split('\n'))
+        {
+            var tileRow = new Array<Int>();
+            for (tile in line.split(','))
+            {
+                var tile = Std.parseInt(tile) - 1;
+                tileRow.push(tile);
+            }
+            tiles.push(tileRow);
+        }
+        return tiles;
+    }
+
+    function extractCollisionModel(levelData:String):String
+    {
+        var collider = "";
+        for (line in levelData.split('\n'))
+        {
+            var collideRow = "";
+            for (tile in line.split(','))
+            {
+                var tile = Std.parseInt(tile) - 1;
+                if (tile > 1)
+                {
+                    collideRow += ",1";
+                }
+                else
+                {
+                    collideRow += ",0";
+                }
+            }
+            collider += collideRow.substr(1) + '\n';
+        }
+        return collider;
     }
 
     public function parse(filename:String)
@@ -34,7 +75,9 @@ class LevelLoader {
         var tileWidth = Std.parseInt(levelXml.att.tilewidth);
         var tileHeight = Std.parseInt(levelXml.att.tileheight);
         var tileData = levelXml.nodes.layer.first().node.data;
-        layout = StringTools.trim(tileData.innerData);
+        var tiles = StringTools.trim(tileData.innerData);
+        tilemap = extractTileModel(tiles);
+        layout = extractCollisionModel(tiles);
 
         var objects = levelXml.nodes.objectgroup.first().nodes.object;
         for (obj in objects)
