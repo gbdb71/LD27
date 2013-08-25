@@ -75,6 +75,7 @@ class PuzzleScene extends Scene
 
     public override function begin()
     {
+        HXP.screen.scale = 4;
         doorControl = new DoorControl();
         var levelLoader = new LevelLoader();
         var currentLevel = levelsAvailable[levelIndex];
