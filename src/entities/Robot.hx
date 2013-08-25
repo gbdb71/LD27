@@ -1,6 +1,7 @@
 package entities;
  
 import com.haxepunk.Entity;
+import com.haxepunk.Sfx;
 import com.haxepunk.graphics.Spritemap;
 import level.Level;
 import com.haxepunk.graphics.Emitter;
@@ -56,10 +57,13 @@ class Robot extends Entity implements Pawn
     var dirY:Int;
     var level:Level;
     var sprites:Spritemap;
+    var sfxPlayer:Sfx;
+    var smashSound:Array<Sfx>;
 
     public function new(x:Float, y:Float, level:Level)
     {
         super(x, y);
+        smashSound = [new Sfx("sfx/smash_normal.mp3"), new Sfx("sfx/smash_normal2.mp3"), new Sfx("sfx/smash_normal3.mp3")];
         sprites = new Spritemap("gfx/robot.png", 8, 8);
         sprites.add("right", [0]);
         sprites.add("left", [1]);
@@ -114,6 +118,8 @@ class Robot extends Entity implements Pawn
             emitter.emit(particleType + "B", x + 4 + dirX * 4, y + 4 + dirY * 4);
         }
         level.shiver(dirX, dirY);
+        var sfx = HXP.choose(smashSound);
+        sfx.play();
         monitor.setCompensation(0,0);
         if (onMoveFinished != null)
             onMoveFinished();
