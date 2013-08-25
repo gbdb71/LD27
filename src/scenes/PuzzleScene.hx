@@ -67,7 +67,7 @@ class PuzzleScene extends Scene
     {
         doorControl = new DoorControl();
         var levelLoader = new LevelLoader();
-        levelLoader.parse("levels/switch-intro.tmx");
+        levelLoader.parse("levels/switch-shuffle.tmx");
 
         var map = new Tilemap("gfx/leveltiles.png", playAreaWidth, playAreaHeight, gridWidth, gridHeight);
         map.loadFrom2DArray(levelLoader.tilemap);
