@@ -29,6 +29,7 @@ class Level extends Entity
         for( obstacle in obstacles ){
             if (obstacle.isSolid(column, row, startX, startY))
             {
+                trace("Solid due to " + obstacle);
                 return true;
             }
         }
