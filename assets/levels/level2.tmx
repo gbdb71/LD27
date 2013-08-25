@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="20" height="15" tilewidth="8" tileheight="8">
+ <tileset firstgid="1" name="leveltiles" tilewidth="8" tileheight="8">
+  <image source="../graphics/leveltiles.png" width="32" height="8"/>
+ </tileset>
+ <tileset firstgid="5" name="entitytiles" tilewidth="8" tileheight="8">
+  <tileoffset x="4" y="4"/>
+  <image source="../raw/entitytiles.png" width="56" height="16"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="20" height="15">
+  <data encoding="csv">
+4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+4,4,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,
+4,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,4,4,
+4,4,2,2,2,4,3,3,3,3,3,3,3,3,3,3,4,2,4,4,
+4,4,2,4,4,4,2,2,2,2,2,2,2,2,2,2,4,2,4,4,
+4,4,2,4,3,3,2,2,2,3,3,2,2,2,4,2,4,2,4,4,
+4,4,2,4,2,2,2,2,2,2,2,2,2,2,3,2,4,2,4,4,
+4,4,2,4,2,2,2,2,2,2,2,2,2,2,2,2,4,2,4,4,
+4,4,2,3,4,2,2,2,2,2,2,2,2,2,4,2,4,2,4,4,
+4,4,2,2,4,2,2,2,2,2,2,2,2,2,4,2,4,2,4,4,
+4,4,2,2,4,4,4,4,2,2,2,2,4,4,4,2,3,2,4,4,
+4,4,2,2,3,3,3,3,3,2,2,3,3,3,3,2,2,2,4,4,
+4,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,4,4,
+4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
+</data>
+ </layer>
+ <objectgroup name="Object Layer 1" width="20" height="15">
+  <object gid="12" x="64" y="56"/>
+  <object gid="11" x="64" y="40"/>
+  <object gid="13" x="80" y="72"/>
+ </objectgroup>
+</map>

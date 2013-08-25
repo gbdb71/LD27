@@ -11,6 +11,10 @@ typedef Array2D = Array<Array<Int>>;
 
 class LevelLoader {
 
+    private static inline var DisposalGID:Int = 11;
+    private static inline var BombGID:Int = 12;
+    private static inline var RobotGID:Int = 13;
+
     public var bomb(default, null):Point;
     public var robot(default, null):Point;
     public var dispose(default, null):Point;
@@ -82,20 +86,26 @@ class LevelLoader {
         var objects = levelXml.nodes.objectgroup.first().nodes.object;
         for (obj in objects)
         {
-            var x = Math.floor(Std.parseInt(obj.att.x) / tileWidth);
-            var y = Math.floor(Std.parseInt(obj.att.y) / tileHeight);
-            if (obj.att.type == "bomb")
+            var x = Math.floor((Std.parseInt(obj.att.x) + 4) / tileWidth);
+            var y = Math.floor((Std.parseInt(obj.att.y) - 4) / tileHeight);
+            var gid = -1;
+            var type = "";
+            if (obj.has.gid)
+                gid = Std.parseInt(obj.att.gid);
+            if (obj.has.type)
+                type = obj.att.type;
+            if (gid == BombGID || type == "bomb")
                 bomb = new Point(x, y);
-            else if (obj.att.type == "robot")
+            else if (gid == RobotGID || type == "robot")
                 robot = new Point(x, y);
-            else if (obj.att.type == "dispose")
+            else if (gid == DisposalGID || type == "dispose")
                 dispose = new Point(x, y);
-            else if (obj.att.type == "breakable")
+            else if (type == "breakable")
             {
                 var breakable = new Point(x, y);
                 breakaway.push(breakable);
             }
-            else if (obj.att.type == "ramp")
+            else if (type == "ramp")
             {
                 var point = new Point(x, y);
                 var dirX = 0;
@@ -110,14 +120,14 @@ class LevelLoader {
                 var ramp:RampDef = { point : point, dirX:dirX, dirY:dirY};
                 ramps.push(ramp);
             }
-            else if (obj.att.type == "door")
+            else if (type == "door")
             {
                 var point = new Point(x, y);
                 var name = obj.att.name;
                 var door:DoorDef = { point : point, name:name };
                 doors.push(door);
             }
-            else if (obj.att.type == "switch")
+            else if (type == "switch")
             {
                 var point = new Point(x, y);
                 var target = obj.node.properties.nodes.property.first().att.value;

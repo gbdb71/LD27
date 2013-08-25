@@ -32,6 +32,7 @@ class PuzzleScene extends Scene
     private static inline var EntityLayer:Int = 0;
     private static inline var DisposalLayer:Int = 1;
     private static inline var LevelLayer:Int = 2;
+    private static inline var HudLayer:Int = -1;
 
     public static inline var gridWidth = 8;
     public static inline var gridHeight = 8;
@@ -66,7 +67,7 @@ class PuzzleScene extends Scene
     {
         doorControl = new DoorControl();
         var levelLoader = new LevelLoader();
-        levelLoader.parse("levels/level1.tmx");
+        levelLoader.parse("levels/movement2.tmx");
 
         var map = new Tilemap("gfx/leveltiles.png", playAreaWidth, playAreaHeight, gridWidth, gridHeight);
         map.loadFrom2DArray(levelLoader.tilemap);
@@ -139,6 +140,7 @@ class PuzzleScene extends Scene
 
         timer = new Timer(playAreaWidth, 1, 10);
         add(timer);
+        timer.layer = HudLayer;
     }
 
     private function handleInput() {
