@@ -1,6 +1,7 @@
 package scenes;
  
 import com.haxepunk.Scene;
+import entities.LevelIndex;
 import entities.Switch;
 import entities.Door;
 import entities.Ramp;
@@ -141,6 +142,11 @@ class PuzzleScene extends Scene
         timer = new Timer(playAreaWidth, 1, 10);
         add(timer);
         timer.layer = HudLayer;
+
+        var levelIndex = new LevelIndex(playAreaWidth, playAreaHeight - 20);
+        levelIndex.setIndex(1, 10);
+        add(levelIndex);
+        levelIndex.layer = HudLayer;
     }
 
     private function handleInput() {
