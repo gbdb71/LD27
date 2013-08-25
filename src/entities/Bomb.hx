@@ -1,6 +1,8 @@
 package entities;
  
 import com.haxepunk.HXP;
+import com.haxepunk.graphics.Emitter;
+import com.haxepunk.Sfx;
 import com.haxepunk.graphics.Spritemap;
 import scenes.PuzzleScene;
 import com.haxepunk.Entity;
@@ -9,6 +11,8 @@ import utils.SlideBehaviour;
 import utils.TriggerMonitor;
 import level.Pawn;
 import level.Blockable;
+import flash.display.BitmapData;
+import com.haxepunk.utils.Ease;
  
 class Bomb extends Entity implements Pawn implements Blockable
 {
@@ -55,10 +59,13 @@ class Bomb extends Entity implements Pawn implements Blockable
     var triggerMonitor:TriggerMonitor;
     var sprite:Spritemap;
     var disposing:Bool;
+    var explodeSound:Sfx;
+    var emitter:Emitter;
 
     public function new(x:Float, y:Float)
     {
         super(x, y);
+        explodeSound = new Sfx("sfx/bomb_explode_safely.mp3");
         sprite = new Spritemap("gfx/bomb.png", 8, 8);
         sprite.add("idle", [0, 0, 0, 0, 1, 2, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 2, 0, 0, 1, 1, 1, 1], 3, true);
         sprite.add("fall", [3,4,5], 10, false);
@@ -69,6 +76,20 @@ class Bomb extends Entity implements Pawn implements Blockable
         slideBehaviour.onMoveFinished = onFinished;
         triggerMonitor = new TriggerMonitor(this);
         triggerMonitor.onTileArrive = onArrive;
+
+        emitter = new Emitter(new BitmapData(1,1, false, 0xFFFFFF), 2, 2);
+        emitter.relative = false;
+
+        var name = "safesparks";
+        emitter.newType(name, [0]);
+        emitter.setAlpha(name, 1, 0);
+        emitter.setColor(name, 0xFF9900, 0x333333);
+        emitter.setMotion(name, 65, 10, 1, 50, 5, 0.5, Ease.quadOut);
+        var name = "safesmoke";
+        emitter.newType(name, [0]);
+        emitter.setAlpha(name, 1, 0);
+        emitter.setColor(name, 0x222222, 0x000000);
+        emitter.setMotion(name, 65, 10, 1, 50, 5, 0.5, Ease.quadOut);
     }
 
     function onArrive(fromCol:Int, fromRow:Int, toCol:Int, toRow:Int)
@@ -105,8 +126,18 @@ class Bomb extends Entity implements Pawn implements Blockable
 
     function onAnimationFinished()
     {
-        graphic = null;
-        disposing = false;
+        graphic = emitter;
+        for (i in 0...10)
+        {
+            emitter.emitInRectangle("safesparks", x, y + 6, 8, 2);
+            emitter.emitInRectangle("safesmoke", x, y + 6, 8, 2);
+        }
+        explodeSound.complete = function()
+        {
+            disposing = false;
+            graphic = null;
+        }
+        explodeSound.play();
     }
 
     public function dispose()
