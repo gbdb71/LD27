@@ -73,7 +73,7 @@ class Robot extends Entity implements Pawn
         slideBehaviour.onMoveFinished = onFinished;
         monitor = new TriggerMonitor(this);
         monitor.onTileArrive = onArrive;
-        emitter = new Emitter(new BitmapData(1,1, false, 0xFFFFFFFF), 2, 2);
+        emitter = new Emitter(new BitmapData(1,1, false, 0xBD5F00), 2, 2);
         emitter.relative = false;
 
         var name = "horizontalA";
