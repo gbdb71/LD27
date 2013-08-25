@@ -30,7 +30,7 @@ class Ramp extends Entity implements Blockable
             play = "left";
         else if (dirY < 0)
             play = "up";
-        else if (dirY < 0)
+        else if (dirY > 0)
             play = "down";
         sprite.play(play);
         graphic = sprite;

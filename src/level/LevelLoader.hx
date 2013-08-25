@@ -136,6 +136,7 @@ class LevelLoader {
                         case 3: 
                             dirY = 1;
                     }
+                    trace(dirX, dirY);
                 }
                 var ramp:RampDef = { point : point, dirX:dirX, dirY:dirY};
                 ramps.push(ramp);
