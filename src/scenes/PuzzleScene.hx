@@ -12,6 +12,7 @@ import com.haxepunk.utils.Input;
 import com.haxepunk.masks.Grid;
 import com.haxepunk.graphics.Tilemap;
 import com.haxepunk.HXP;
+import com.haxepunk.Sfx;
 import com.haxepunk.graphics.prototype.Circle;
 import com.haxepunk.graphics.prototype.Rect;
 import com.haxepunk.utils.Ease;
@@ -64,6 +65,7 @@ class PuzzleScene extends Scene
     var levelIndex:Int;
     var screenExplosion:ExplosionFlash;
     var startWithExplosion:Bool;
+    var bombExplodeSound:Sfx;
 
     public function new(levelsAvailable:Array<String>, levelIndex:Int, ?startWithExplosion:Bool)
     {
@@ -165,6 +167,8 @@ class PuzzleScene extends Scene
         if (startWithExplosion)
         {
             screenExplosion.flash();
+            bombExplodeSound = new Sfx("sfx/bomb_explode.mp3");
+            bombExplodeSound.play();
         }
     }
 
