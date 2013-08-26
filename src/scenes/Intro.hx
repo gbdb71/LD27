@@ -15,6 +15,7 @@ class Intro extends Scene
 
     var titleText:Text;
     var promptText:Text;
+    var ldText:Text;
     var continuePrimed:Bool;
     var fadeTween:ColorTween;
 
@@ -32,13 +33,20 @@ class Intro extends Scene
         titleText.x = titleText.textWidth / -2;
         var title = addGraphic(titleText);
         title.x = 80;
-        title.y = 20;
+        title.y = 80;
 
         promptText = new Text("Click here to continue...");
         promptText.x = promptText.textWidth / -2;
         var prompt = addGraphic(promptText);
         prompt.x = 160;
-        prompt.y = 200;
+        prompt.y = 120;
+
+        ldText = new Text("Ludum Dare 27 entry by GhostOnline.");
+        ldText.scale = 0.5;
+        ldText.x = ldText.textWidth / -2;
+        var ld = addGraphic(ldText);
+        ld.x = 160;
+        ld.y = 230;
 
         fadeTween = new ColorTween(onPromptFade, TweenType.Persist);
         fadeTween.alpha = 1;
