@@ -346,7 +346,7 @@ class PuzzleScene extends Scene
         else if (resetPrime)
         {
             resetPrime = false;
-            HXP.scene = new PuzzleScene(levelsAvailable, levelIndex);
+            HXP.scene = new PuzzleScene(levelsAvailable, levelIndex, true);
         }
     }
 
