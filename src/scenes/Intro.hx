@@ -56,7 +56,7 @@ class Intro extends Scene
     function onPromptFade(Void):Void
     {
         var levels = LevelCollection.getAllLevels();
-	    HXP.scene = new PuzzleScene(levels, 0);
+	    HXP.scene = new PuzzleScene(levels, 0, false, true);
     }
 
     public override function update()

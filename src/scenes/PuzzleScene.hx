@@ -28,6 +28,7 @@ import level.Level;
 import level.Blockable;
 import utils.DoorControl;
 import entities.ExplosionFlash;
+import entities.FadeScreen;
  
 class PuzzleScene extends Scene
 {
@@ -67,15 +68,18 @@ class PuzzleScene extends Scene
     var levelsAvailable:Array<String>;
     var levelIndex:Int;
     var screenExplosion:ExplosionFlash;
+    var screenFader:FadeScreen;
     var startWithExplosion:Bool;
+    var startWithFadeIn:Bool;
     var bombExplodeSound:Sfx;
 
-    public function new(levelsAvailable:Array<String>, levelIndex:Int, ?startWithExplosion:Bool)
+    public function new(levelsAvailable:Array<String>, levelIndex:Int, ?startWithExplosion:Bool, ?startWithFadeIn:Bool)
     {
         super();
         this.levelsAvailable = levelsAvailable;
         this.levelIndex = levelIndex;
         this.startWithExplosion = startWithExplosion;
+        this.startWithFadeIn = startWithFadeIn;
         allEntities = new Array<Entity>();
     }
 
@@ -181,6 +185,14 @@ class PuzzleScene extends Scene
             screenExplosion.flash();
             bombExplodeSound = new Sfx("sfx/bomb_explode.mp3");
             bombExplodeSound.play();
+        }
+
+        screenFader = new FadeScreen();
+        add(screenFader);
+        screenFader.layer = ExplosionLayer;
+        if (startWithFadeIn)
+        {
+            screenFader.flash(false);
         }
 
         transitionScroller = new NumTween(scrollComplete, TweenType.Persist);
@@ -292,6 +304,9 @@ class PuzzleScene extends Scene
     public override function update()
     {
         super.update();
+        if (fadingOut)
+            return;
+
         if (bomb.isDisposed)
         {
             if (levelIndex + 1 < levelsAvailable.length && !transitioning)
@@ -299,6 +314,12 @@ class PuzzleScene extends Scene
                 transitioning = true;
                 scrollToNextMap();
             }
+            else if (levelIndex + 1 == levelsAvailable.length)
+            {
+                fadingOut = true;
+                screenFader.flash(true);
+            }
+
             if (otherLevel != null)
             {
                 otherLevel.x = 160-Math.floor(transitionScroller.value);
@@ -331,6 +352,7 @@ class PuzzleScene extends Scene
     var timer:Timer;
     var doorControl:DoorControl;
     var transitioning:Bool;
+    var fadingOut:Bool;
     var transitionScroller:NumTween;
     var otherLevel:Entity;
     var allEntities:Array<Entity>;
