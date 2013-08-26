@@ -6,11 +6,12 @@ import com.haxepunk.utils.Ease;
 import com.haxepunk.tweens.misc.ColorTween;
 import com.haxepunk.utils.Input;
 import com.haxepunk.HXP;
+import com.haxepunk.Sfx;
 import com.haxepunk.graphics.Text;
 import level.LevelCollection;
 import scenes.PuzzleScene;
  
-class Intro extends Scene
+class GameComplete extends Scene
 {
 
     var titleText:Text;
@@ -18,62 +19,55 @@ class Intro extends Scene
     var ldText:Text;
     var continuePrimed:Bool;
     var fadeTween:ColorTween;
+    var words:Array<String>;
+    var wordsIndex = 0;
+    var presentSound:Sfx;
+    var bigPresentSound:Sfx;
 
     public function new()
     {
         super();
+        words = ["Thank", " you", " for", " playing!"];
+        presentSound = new Sfx("sfx/bomb_explode_safely.mp3");
+        bigPresentSound = new Sfx("sfx/bomb_explode.mp3");
     }
 
     public override function begin()
     {
         HXP.screen.scale = 2;
 
-        titleText = new Text("Last second hero");
+        titleText = new Text("Game complete");
         titleText.scale = 2;
         titleText.x = titleText.textWidth / -2;
         var title = addGraphic(titleText);
-        title.x = 80;
+        title.x = 95;
         title.y = 80;
 
-        promptText = new Text("Click here to continue...");
+        promptText = new Text("Thank you for playing!");
         promptText.x = promptText.textWidth / -2;
+        promptText.text = "";
         var prompt = addGraphic(promptText);
         prompt.x = 160;
         prompt.y = 120;
-
-        ldText = new Text("Ludum Dare 27 entry by GhostOnline.");
-        ldText.scale = 0.5;
-        ldText.x = ldText.textWidth / -2;
-        var ld = addGraphic(ldText);
-        ld.x = 160;
-        ld.y = 230;
-
-        fadeTween = new ColorTween(onPromptFade, TweenType.Persist);
-        fadeTween.alpha = 1;
-        addTween(fadeTween);
+        HXP.alarm(2, nextPrompt);
     }
 
-    function onPromptFade(Void):Void
+    function nextPrompt(Void)
     {
-        var levels = LevelCollection.getAllLevels();
-	    HXP.scene = new PuzzleScene(levels, 0, false, true);
+        promptText.text += words[wordsIndex];
+        wordsIndex += 1;
+        if (wordsIndex < words.length)
+        {
+            presentSound.play();
+            HXP.alarm(0.5, nextPrompt);
+        }
+        else
+            bigPresentSound.play();
     }
 
     public override function update()
     {
         super.update();
-
-        if (Input.mouseDown)
-        {
-            continuePrimed = true;
-        }
-        else if (continuePrimed)
-        {
-            continuePrimed = false;
-            fadeTween.tween(1, 0xFFFFFF, 0xFFFFFF, 1, 0, Ease.quadInOut);
-        }
-
-        promptText.alpha = fadeTween.alpha;
     }
 
 }

@@ -29,6 +29,7 @@ import level.Blockable;
 import utils.DoorControl;
 import entities.ExplosionFlash;
 import entities.FadeScreen;
+import scenes.GameComplete;
  
 class PuzzleScene extends Scene
 {
@@ -305,7 +306,11 @@ class PuzzleScene extends Scene
     {
         super.update();
         if (fadingOut)
+        {
+            if (screenFader.idle)
+                HXP.scene = new GameComplete();
             return;
+        }
 
         if (bomb.isDisposed)
         {

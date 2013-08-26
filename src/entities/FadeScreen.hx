@@ -8,6 +8,8 @@ import com.haxepunk.HXP;
  
 class FadeScreen extends Entity
 {
+    public var idle:Bool;
+
     var canvas:Canvas;
     var alpha:Float;
     var dir:Int;
@@ -19,6 +21,7 @@ class FadeScreen extends Entity
         canvas.fill(new Rectangle(0, 0, canvas.width, canvas.height), 0x333333, 1);
         canvas.alpha = alpha = 0;
         graphic = canvas;
+        idle = true;
     }
 
     public function flash(forward:Bool)
@@ -33,6 +36,7 @@ class FadeScreen extends Entity
             dir = -1;
             alpha = 1;
         }
+        idle = false;
     }
 
     public override function update()
@@ -43,5 +47,7 @@ class FadeScreen extends Entity
             alpha += 0.01 * dir;
             canvas.alpha = alpha;
         }
+        else
+            idle = true;
     }
 }
